@@ -1,0 +1,9 @@
+﻿{
+    "installs":  [
+                     {
+                         "agent":  "opencode",
+                         "source":  "AGENTS.md",
+                         "dest":  "~\\.config\\opencode\\AGENTS.md"
+                     }
+                 ]
+}

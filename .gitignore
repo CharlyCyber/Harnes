@@ -1,0 +1,11 @@
+# secretos y locales — jamás commitear
+*.local.json
+.env
+.env.*
+*auth-secrets*
+
+# basuras del sistema
+__pycache__/
+*.pyc
+Thumbs.db
+Desktop.ini
