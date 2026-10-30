@@ -2,6 +2,14 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-10-30
+
+- **Primeras adopciones al catálogo canónico:** `find-skills` (Vercel) y `design-taste-frontend` (taste-skill). Instaladas en `skills/`, sincronizadas a OpenCode. Procedencia, commit y prueba design en `skills/REGISTRO.md`.
+  - Razón: find-skills resuelve un comportamiento real (descubrir skills bajo demanda sin inflar catálogo) con 1 archivo; taste-skill es el núcleo de la propuesta de valor CHARLI (dirección de arte anti-slop).
+- **Stack base activo declarado:** las ~30 skills heredadas (hyperframes family, brag, last30days, rea, media-use, etc.) quedan documentadas y vigentes; el catálogo canónico lleva solo adiciones nuevas (minimalismo sin destruir herramientas reales).
+- **Diferidas con vista:** security-audit de Cloudflare (para el primer proyecto cliente asegurado) y selectivas de addyosmani/mattpocock. Descartadas con razón las demás (ver REGISTRO).
+- **debate abierto:** design-taste-frontend vs frontend-polish (Impeccable) se resuelve con test doble ciego en el próximo trabajo real de diseño; el perdedor sale del stack.
+
 ## 2026-10-29
 
 - **Nace el harnás "Harnés"** tras eliminar por completo el Agente Universal (repo, carpeta, copias y configs).

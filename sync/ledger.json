@@ -4,6 +4,18 @@
                          "agent":  "opencode",
                          "source":  "AGENTS.md",
                          "dest":  "~\\.config\\opencode\\AGENTS.md"
+                     },
+                     {
+                         "agent":  "opencode",
+                         "source":  "skills\\design-taste-frontend",
+                         "kind":  "carpeta",
+                         "dest":  "~\\.config\\opencode\\skills\\design-taste-frontend"
+                     },
+                     {
+                         "agent":  "opencode",
+                         "source":  "skills\\find-skills",
+                         "kind":  "carpeta",
+                         "dest":  "~\\.config\\opencode\\skills\\find-skills"
                      }
                  ]
 }

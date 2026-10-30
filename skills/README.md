@@ -1,6 +1,6 @@
 # skills/
 
-Catálogo **intencionalmente vacío**. Las skills se instalarán aquí bajo demanda, siguiendo el estándar de agentskills.io:
+Catálogo canónico. Ver `REGISTRO.md` para procedencia, licencias, stack base activo y decisiones (incluye difidas y descartadas con razón).
 
 ```
 mi-skill/
@@ -15,3 +15,4 @@ Condiciones para añadir una skill (ratchet):
 1. Existe un comportamiento o fallo que la justifica (trazable en `knowledge/failures.md`).
 2. `SKILL.md` < 500 líneas; cuerpo < 5000 tokens; recursos con disclosure progresiva.
 3. Solo rutas relativas.
+4. Variante upstream registrada en `REGISTRO.md` con commit + licencia + `LICENSE-upstream`.
