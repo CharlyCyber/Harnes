@@ -20,3 +20,4 @@ Canon del harnés: este repo. Las copias instaladas en agentes (mediante `sync/`
 8. **Formato de respuesta:** TL;DR inicial + explicación clara (ELI5–ELI10), listas, pasos ordenados, ejemplos cuando ayuden.
 9. **Portabilidad:** jamás rutas absolutas dentro del harnés ni en sus copias. Solo referencias relativas. El harnés debe funcionar íntegro desde cualquier ruta de checkout.
 10. **Custodia de proyectos:** jamás destruir trabajo de proyectos existentes. Estado experimental en ramas o worktrees de Git.
+11. **Marca antiruina:** todo trabajo de diseño/copy/código para CHARLI o CHARLI AI se valida contra los criterios de aceptación de `knowledge/brand.md` (paleta ink/paper + lime único acento, tipografía con roles, motion interactivo con fallback, copy español concreto). "Genérico" = no entregado.

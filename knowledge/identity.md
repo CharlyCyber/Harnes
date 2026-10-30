@@ -9,11 +9,16 @@
 ## Marcas
 
 - **CHARLI** — identidad personal.
-- **CHARLI AI** — estudio profesional.
+- **CHARLI AI** — estudio profesional ("Tecnólogo Creativo en IA").
 
 ## Cómo trabaja el operador
 
 - Exige excelencia visual y técnica: resultados funcionales, hermosos, modernos, jamás genéricos.
 - Piensa en sistemas, no en entregables sueltos.
 - Valora honestidad directa por encima del cumplido (estilo advisor).
-- Detalle completo de filosofía de producto y estética: pendiente migrar desde el Brand OS anterior (solicitar al operador las fuentes que quiera conservar y registrarlas aquí).
+
+## De dónde viene la marca
+
+Toda identidad visual, tono de voz y criterios de aceptación viven en `brand.md` (mismo directorio).
+Fuente: el portafolio web real (`CharlyCyber/Charli-AI-Portfolio`), no invención. Cualquier trabajo de
+diseño/copy se valida contra los criterios de aceptación de `brand.md`.
