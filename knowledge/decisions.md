@@ -4,6 +4,8 @@ Formato: fecha — decisión — razón — evidencia/fuente.
 
 ## 2026-10-30
 
+- **Remote canónico creado:** `github.com/CharlyCyber/Harnes` (privado). Canon versionado en GitHub; sync/local sigue siendo la fuente de verdad de trabajo. Privado por contener identidad, decisiones y planes del operador.
+  - Nota: se usó la credencial almacenada de Git Credential Manager (PAT clásico); el token del keyring de `gh` CLI sigue inválido (pendiente `gh auth login`).
 - **Primeras adopciones al catálogo canónico:** `find-skills` (Vercel) y `design-taste-frontend` (taste-skill). Instaladas en `skills/`, sincronizadas a OpenCode. Procedencia, commit y prueba design en `skills/REGISTRO.md`.
   - Razón: find-skills resuelve un comportamiento real (descubrir skills bajo demanda sin inflar catálogo) con 1 archivo; taste-skill es el núcleo de la propuesta de valor CHARLI (dirección de arte anti-slop).
 - **Stack base activo declarado:** las ~30 skills heredadas (hyperframes family, brag, last30days, rea, media-use, etc.) quedan documentadas y vigentes; el catálogo canónico lleva solo adiciones nuevas (minimalismo sin destruir herramientas reales).
