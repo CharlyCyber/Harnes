@@ -34,10 +34,12 @@ function Get-InstallPlan {
         'freebuff'    = @()
     }
     # skills canónicas (cada carpeta con SKILL.md) -> .config\opencode\skills\<nombre>\
+    # _DORMIDA.md: skill vendoreada que vive en canon pero NO se instala en agentes (decisión 2026-10-30)
     $skillsRoot = Join-Path $Canon 'skills'
     if (Test-Path $skillsRoot) {
         foreach ($dir in Get-ChildItem $skillsRoot -Directory) {
             if (Test-Path (Join-Path $dir.FullName 'SKILL.md')) {
+                if (Test-Path (Join-Path $dir.FullName '_DORMIDA.md')) { continue }
                 $plan['opencode'] += @{ dir = $dir.FullName; name = $dir.Name }
             }
         }

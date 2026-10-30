@@ -2,6 +2,20 @@
 
 Cada skill del canon, su procedencia exacta, licencia y el comportamiento que justifica su existencia (ratchet). Las skills ya instaladas en los agentes antes de este registro viven en la sección "Stack base activo" abajo — no se duplican en el canon; se reproducen desde su upstream o se adoptarán bajo demanda.
 
+## Dormidas en canon (vendoreadas, NO instaladas)
+
+Vivirán solo en el repo (2026-10-30, a petición del operador). Cada carpeta lleva `_DORMIDA.md` y `sync.ps1` no las instala. Reactivar = borrar el marcador + correr sync.
+
+| Skill | Procedencia | Por qué está dormida |
+|---|---|---|
+| `ui-ux-pro-max` | db de diseño buscable (instalada pre-registro) | Solapa con `design-taste-frontend` y `frontend-polish` |
+| `web-design-pipeline` | orquestador de fases de diseño (pre-registro) | Solapa con la orquestación del harnés mismo |
+| `web-design-strategist` | estrategia/pricing de diseño (pre-registro) | Sin uso real registrado |
+| `shadcn` | shadcn/ui (pre-registro) | Se consulta vía context7/docs cuando un proyecto lo use |
+| `material-3` | Material Design 3 (pre-registro) | Sin proyecto Android/M3 activo |
+| `ui-stack-recipes` | recetas por stack UI (pre-registro) | Recetas ≠ criterio; context7 cubre lo puntual |
+| `headroom` | compresión de contexto (pre-registro) | Sin workflows agénticos que lo pidan hoy |
+
 ## Adopciones propias del harnés
 
 | Skill | Fuente / commit | Licencia | Comportamiento justificado |
