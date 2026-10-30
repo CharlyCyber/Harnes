@@ -20,9 +20,15 @@ sync/                instalador determinista e idempotente para cada agente
 4. **Solo rutas relativas.** El harnés funciona desde cualquier ruta.
 5. Simple primero; complejidad solo cuando la evidencia la pida.
 
-## Sinchronización
+## Sincronización
 
-Instalar en todos los agentes soportados ejecuta sync/sync.ps1 (ver sync/README.md).
+Bootstrap de una línea (clona/actualiza el canon e instala en los agentes con plan):
+
+```powershell
+irm https://raw.githubusercontent.com/CharlyCyber/Harnes/main/install.ps1 | iex
+```
+
+Instalar manualmente en todos los agentes soportados: ejecutar sync/sync.ps1 (ver sync/README.md).
 
 ## Referencia de diseño
 
