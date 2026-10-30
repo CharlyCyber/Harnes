@@ -15,6 +15,10 @@ Formato: fecha — decisión — razón — evidencia/fuente.
 - **Git-gate cómo única capa de hooks inicial** (éxito silencioso, fallos verbosos), el resto de hooks nace de fallos reales (ratchet).
 - **Estructura mínima:** AGENTS.md + knowledge/ + skills/ + hooks/ + sync/. Nada más hasta que la evidencia lo justifique.
 
+## 2026-10-30
+
+- **Purga completa del Freebuff:** carpeta del proyecto AU borrada, 3 referencias limpiadas de `state.json` (recentProjects, espacio de trabajo, collapsedProjects), `adopt-harness` retirada del bundle de skills y mención neutralizada en `chrome-devtools-mcp`. Freebuff queda sin rastros a nivel de configuración; solo persisten bases de datos de historiales de conversación (decisión: no tocar, son chats del usuario, no configs).
+
 ## Fuentes de diseño consultadas (2026-10-29)
 
 - Anatomy of an Agent Harness — Vivek Trivedy (LangChain)
