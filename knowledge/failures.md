@@ -25,3 +25,14 @@ Cada fallo del agente (del Agente Universal o de este harnés) queda registrado 
 | El remote `origin` del portafolio tenía un token GitHub OAuth incrustado en la URL (`https://CharlyCyber:gho_...@github.com/...`), visible en cualquier `git remote -v` o screenshot de config. | La app que configuró el remote incrustó credenciales en lugar de usar un credential helper. | Remote reseteado a URL limpia (la autenticación salió por Git Credential Manager desde entonces). Hook `hooks/check-secrets.ps1` para detectar el patrón en todo el árbol de trabajo antes de commitear. |
 
 **Regla derivada:** jamás incrustar credenciales en URLs de remote; los secretos solo viven en variables de entorno o archivos locales no rastreados (ya elevado a regla 3 del canon con este fallo como prueba).
+
+## 2026-10-30 — Purga de skills: el servidor era la fuente de verdad y las borradas al nivel local resucitan
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| Al purgar 32 skills viejas de la cuenta, borrar el bundle local (`~/.config/freebuff-desktop/account-skills/`) y resetear `imported.json` no sirvió: el servidor (`www.codebuff.com`) mantenía su copia y la app re-materializa al relanzar. | Codebuff (backend) es la fuente de verdad del catálogo de skills de la cuenta; el bundle local de Freebuff es solo un caché materializado que se repone desde el server en cada fetch. | El borrado correcto es **server-side**: `PUT /api/v1/cloud/skills` con la revision vigente y la lista **completa** de skills ( el PUT reemplaza el catálogo entero, no hace merge ). Borrar cachés locales solo sirve después de ganar el server. |
+| `curl.exe` / `Invoke-RestMethod` (SChannel) fallan con `SEC_E_DECRYPT_FAILURE` descargando respuestas grandes del API de codebuff.com (>~45KB corta el stream). | TLS de SChannel en PS 5.1 no sostiene el stream contra este host. | Para JSON grande usar Node con `fetch` (OpenSSL). Token leído desde `~/.config/manicode/credentials.json` sin imprimirse jamás (regla 3). |
+| Primer `PUT` rechazado HTTP 400: `files[9].contents` "too_big". Y payload completo rebasaba el refine de 2.5MB total (`JSON.stringify ≤ 2,500,000` chars). | Límites hard del server: `instructions ≤ 50,000B`, `files[].contents ≤ 100,000B`, `files ≤ 100/skill`, total ≤ 2.5MB. Los `library/*.json` de design-taste-frontend (heroes 107KB, photos 168KB, sections 280KB, sites 857KB) los exceden. | Exclusión declarada del transporte (queda en canon local): `README.md`, `LICENSE-upstream`, `library/{sites,heroes,photos,sections}.json`. Payload resultante: 1.08MB, 33 files, HTTP 200 → revision 3. |
+| `Remove-Item -Recurse` falló contra el bundle vencido: ruta interna > 260 chars (clásico MAX_PATH de Windows). | PowerShell 5.1 no maneja rutas largas. | Borrado vía Node con fs.rmSync y prefijo `\\?\` (si aplicare fallback: `robocopy /MIR` de un dir vacío). |
+
+## 2026-10-30 — Fuga de token OAuth en la URL de un remote Git
