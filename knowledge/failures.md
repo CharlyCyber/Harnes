@@ -12,6 +12,12 @@ Cada fallo del agente (del Agente Universal o de este harnés) queda registrado 
 | Sin capa anti-destruccion: una limpieza global pudo dañar trabajo irreemplazable. | Cero hooks de seguridad. | Regla 10 (custodia de proyectos); hook destructivo cuando existan hooks. |
 | Desconocimiento de dónde estaba instalado qué (skills viviendo en 3 ciudades). | Sin fuente única de verdad. | Este repo es canónico; las copias son derivadas reproducibles con sync. Si se rompe el canon, reconstruir limpio. |
 
+## 2026-10-30 — Bloqueo de red hacia firecrawl.dev (key válida, ruta muerta)
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| `api.firecrawl.dev` y `mcp.firecrawl.dev` se agotan a nivel TCP (DNS resuelve a IP GCP; google.com responde 200 en la misma sesión). El MCP de firecrawl sería aire. | Bloqueo de egress de la red local del operador (Mayabeque, Cuba) hacia las IPs GCP de Firecrawl. No es problema de la key ni de config. | Key guardada en env var de usuario (`FIRECRAWL_API_KEY`), config MCP instalada con `enabled: false` — lista para reactivar cuando cambie la red o haya VPN (`enabled: true` y reiniciar OpenCode). Apify (AWS) sí es alcanzable y quedó activo con su token. |
+
 ## 2026-10-30 — Fuga de token OAuth en la URL de un remote Git
 
 | Fallo observado | Causa raíz | Mitigación adoptada |
