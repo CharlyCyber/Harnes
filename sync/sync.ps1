@@ -6,7 +6,7 @@
     sync.ps1 -Agent opencode  # instala solo en uno
     sync.ps1 -Verify          # solo comprueba sincronización (cero cambios, exit 1 si desactualizado)
   Determinista e idempotente. Registra cada archivo/carpeta instalada en ledger.json.
-  Regla 9 del canon: el ledger guarda destinos relativos al perfil (~\), jamás rutas absolutas.
+  Regla 8 del canon: el ledger guarda destinos relativos al perfil (~\), jamás rutas absolutas.
 #>
 [CmdletBinding()]
 param(
