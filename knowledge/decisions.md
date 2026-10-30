@@ -2,6 +2,12 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-10-30 (tarde)
+
+- **Marca reconstruida desde el portafolio:** `knowledge/brand.md` compilado íntegramente de `CharlyCyber/Charli-AI-Portfolio` (tokens Cosmos del CSS, 4 familias tipográficas self-hosted, motion físico del hero, copy real, 7 criterios de aceptación gradables). De ahí nace la **regla 11** del canon (validación antiruina: "genérico = no entregado"). La carpeta `Proyectos\Charli AI Brand OS` queda descartada como fuente (solo logos/PDF).
+- **Fuga de token:** fuga real en el remote del portafolio (token OAuth en URL, saneado) → registrada en `failures.md` + primer hook del harnés: `hooks/check-secrets.ps1` (8 patrones, verificado: 0 fugas en 50 archivos). Regla 3 queda trazada a evidencia.
+- **Auditoría MCPs (7 → 4):** eliminados `playwright` (duplicado de chrome-devtools), `markitdown` (nicho sin uso), `motion/motion-studio` (registry remoto dinámico, nunca cargó). Activos: `chrome-devtools`, `context7`, `firecrawl`, `apify` — canónicos en `knowledge/mcps.md`. Pendiente del operador: keys `FIRECRAWL_API_KEY` y `APIFY_TOKEN` (no existen en ninguna scope; sin ellas esos dos MCPs quedan degradables). Backup pre-auditoría en `opencode.json.bak`.
+
 ## 2026-10-30
 
 - **Remote canónico creado:** `github.com/CharlyCyber/Harnes` (privado). Canon versionado en GitHub; sync/local sigue siendo la fuente de verdad de trabajo. Privado por contener identidad, decisiones y planes del operador.
