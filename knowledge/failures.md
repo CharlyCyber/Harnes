@@ -2,6 +2,13 @@
 
 Cada fallo del agente (del Agente Universal o de este harnés) queda registrado aquí y, si procede, se convierte en una regla en AGENTS.md, un hook o una skill. Sin evidencia no se añade regla.
 
+## 2026-10-31 — Vendoreo sin saneo y deslices de tipeo del agente
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| El vendoreo de ayer trajo copias anidadas de sí mismas (`skills/shadcn/shadcn/`, `skills/headroom/headroom/`...) por no sanear al copiar (hoy quedó sin efecto tras la eliminación de las dormidas; la regla queda para el próximo vendoreo). | Copia tal cual de installs heredados sin inspección previa. | Regla de vendoreo: verificar la estructura antes y después de copiar — no puede existir `{dest}/{name}` anidada. |
+| Deslices míos de tipeo en archivos del canon (caracteres fuera de idioma y frases corrompidas a mitad de edición) en 4+ archivos hoy. | Escritura rápida sin relectura del resultado. | Cada escritura/edición en un archivo del canon cierra con relectura del bloque escrito (misma disciplina que el parse-check de .ps1: BOM + Parser). |
+
 ## 2026-10-29 — Postmortem del Agente Universal
 
 | Fallo observado | Causa raíz | Mitigación adoptada |

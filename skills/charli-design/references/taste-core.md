@@ -1,18 +1,4 @@
----
-name: design-taste-frontend
-description: >-
-  tasteskill v2, the anti-slop frontend skill. Art direction for websites, distilled from a study of
-  247 curated gallery sites (One Page Love, Awwwards Sites of the Day). Deals researched directions
-  (idea, composition, type, palette, photographs, section blueprints) from a library, enforces a strict
-  no-slop house style with a real-browser inspector, and runs a look-and-fix loop on screenshots. Use
-  this whenever you build, design, redesign, restyle, polish or review a landing page, marketing site,
-  portfolio, product page, one-pager, hero or any public-facing web page, in any stack (HTML/CSS, React,
-  Next.js, Vue, Svelte, Astro, Tailwind) — also when the user says a page looks generic, templated,
-  "AI-made", sloppy, or asks to make it look designed, premium, award-level or less like every other
-  site. Also for app screens: dashboards, admin and analytics views, settings, inboxes and other screens
-  people work in, with their own run and rules.
----
-
+﻿
 # tasteskill v2
 
 A page built by a model usually looks like the average of every page the model has seen: a centred
@@ -540,3 +526,4 @@ open collections could not be searched.
 | `assets/scenes/` | The scroll scenes: the shared stage (`stage.js`, `stage.css`) and, for each scene in the library, its `.js`, `.css` and a working demo page in `demo/`. |
 | `assets/app.css` · `assets/charts.js` | For app screens: a neutral shell, panels, tables and controls, and small SVG charts drawn to the app rules. |
 | `library/` | The data the draw reads: directions, heroes, sections, type systems, palettes, photographs, studied sites, motions, scroll scenes (`scenes.json`), and the app styles, shells and screen patterns (`app.json`). Do not read it whole; use the script. |
+

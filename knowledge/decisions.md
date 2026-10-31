@@ -1,6 +1,10 @@
-# Registro de Decisiones
+﻿# Registro de Decisiones
 
 Formato: fecha — decisión — razón — evidencia/fuente.
+
+## 2026-10-31
+
+- **Tres órdenes del operador ejecutadas en una tanda:** (1) las 7 skills dormidas **eliminadas del canon por completo** (`ui-ux-pro-max`, `web-design-pipeline`, `web-design-strategist`, `shadcn`, `material-3`, `ui-stack-recipes`, `headroom`) — sin rastros; (2) **A/B de diseño cerrado por fusión:** `design-taste-frontend` + `frontend-polish` → **`charli-design`** (biblioteca de taste como cuerpo técnico + leyes de Impeccable como doctrina; veredicto: ninguna skill existente cubría mejor la dirección de arte, así que la fusión en 1 es lo correcto); (3) **sync v0.3 neutro:** estándar universal (`~\.agents\AGENTS.md` + `~\.agents\skills\`) + puentes gobernados por `ledger.json` — cero nombres de agentes; cualquier agente del mundo sincroniza con el enlace del repo (`README` → `install.ps1` → `sync`; y si su cliente no lee el estándar universal, él mismo copia y se registra en el ledger). Protocolo Codebuff documentado en `sync/README.md` (re-PUT manual con revision; riesgo anotado: los dirs locales de skills alimentan el importer de Freebuff al arrancar).
 
 ## 2026-10-30 (tarde)
 

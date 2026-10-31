@@ -1,108 +1,146 @@
 #Requires -Version 5.1
 <#
-  sync.ps1 — instalador del harnés de CHARLI (v0.2)
+  sync.ps1 — instalador del harnés de CHARLI (v0.3, NEUTRO)
+
+  Estándar universal (sin planes por agente):
+    - Instrucciones: ~\.agents\AGENTS.md
+    - Skills activas del canon: ~\.agents\skills\<nombre>
+
+  Puentes (cero nombres de agentes): cada instalación previa registrada en
+  ledger.json se refresca desde el canon si su destino aún existe. Así, los
+  agentes ya configurados en tiempo pasado (p. ej. OpenCode) quedan al día sin
+  que este script conozca su nombre. Si el canon RETIRÓ una fuente, la copia
+  puente queda obsoleta y se elimina: el canon es la única fuente de verdad.
+
   Uso:
-    sync.ps1                  # instala en todos los agentes con plan no vacío
-    sync.ps1 -Agent opencode  # instala solo en uno
-    sync.ps1 -Verify          # solo comprueba sincronización (cero cambios, exit 1 si desactualizado)
-  Determinista e idempotente. Registra cada archivo/carpeta instalada en ledger.json.
-  Regla 8 del canon: el ledger guarda destinos relativos al perfil (~\), jamás rutas absolutas.
+    sync.ps1        # instala/actualiza todo
+    sync.ps1 -Verify  # solo comprueba (sin cambios; exit 1 si desfasado)
 #>
 [CmdletBinding()]
-param(
-    [ValidateSet('opencode','claude-code','gemini','kilo','antigravity','freebuff')]
-    [string]$Agent = '',
-    [switch]$Verify
-)
+param([switch]$Verify)
 
 $ErrorActionPreference = 'Stop'
 $Canon = $PSScriptRoot | Split-Path -Parent
 $Home_ = [Environment]::GetFolderPath('UserProfile')
+$agentsskillDir = Join-Path $Home_ '.agents\skills'
 
-function Get-InstallPlan {
-    # Plan = lista de items:
-    #  archivo:  { src, dest }  -> copia un archivo del canon al destino
-    #  carpeta:  { dir, name }  -> copia la carpeta entera del canon a skills del agente
-    $plan = @{
-        'opencode' = @(
-            @{ src = Join-Path $Canon 'AGENTS.md'; dest = Join-Path $Home_ '.config\opencode\AGENTS.md' }
-        )
-        'claude-code' = @()
-        'gemini'      = @()
-        'kilo'        = @()
-        'antigravity' = @()
-        'freebuff'    = @()
-    }
-    # skills canónicas (cada carpeta con SKILL.md) -> .config\opencode\skills\<nombre>\
-    # _DORMIDA.md: skill vendoreada que vive en canon pero NO se instala en agentes (decisión 2026-10-30)
+# --- fuentes del canon -------------------------------------------------------
+function Get-CanonSources {
+    $items = @(
+        @{ rel = 'AGENTS.md'; kind = 'archivo' }
+    )
     $skillsRoot = Join-Path $Canon 'skills'
     if (Test-Path $skillsRoot) {
         foreach ($dir in Get-ChildItem $skillsRoot -Directory) {
-            if (Test-Path (Join-Path $dir.FullName 'SKILL.md')) {
-                if (Test-Path (Join-Path $dir.FullName '_DORMIDA.md')) { continue }
-                $plan['opencode'] += @{ dir = $dir.FullName; name = $dir.Name }
+            if ((Test-Path (Join-Path $dir.FullName 'SKILL.md')) -and -not (Test-Path (Join-Path $dir.FullName '_DORMIDA.md'))) {
+                $items += @{ rel = "skills\$($dir.Name)"; kind = 'carpeta' }
             }
         }
     }
-    return $plan
+    return $items
 }
 
-# destino de un item según el agente
-function Resolve-Dest([string]$agent, [hashtable]$item) {
-    if ($item.dest) { return $item.dest }
-    switch ($agent) {
-        'opencode' { return Join-Path $Home_ (Join-Path '.config\opencode\skills' $item.name) }
-        default    { return $null }
+# destino universal para una fuente
+function Get-UniversalDest($rel) {
+    if ($rel -eq 'AGENTS.md') { return Join-Path $Home_ '.agents\AGENTS.md' }
+    return Join-Path $agentsskillDir (($rel -split '\\')[-1])
+}
+
+# puente: destino preexistente (ledger) → misma fuente relativa del canon
+function Get-BridgeDest([string]$storeDest, [string]$rel) {
+    # el dest del ledger se guarda tal cual, relativo a ~, jamás absoluto (regla 8)
+    return $storeDest -replace '^~\\', ($Home_ + '\')
+}
+
+function Get-Fingerprint([string]$path, [string]$kind) {
+    if ($kind -eq 'archivo') {
+        if (-not (Test-Path $path)) { return $null }
+        return (Get-FileHash $path).Hash
+    }
+    if (-not (Test-Path $path)) { return $null }
+    $blob = (Get-ChildItem $path -Recurse -File | Sort-Object FullName | ForEach-Object {
+        "$($_.FullName.Substring($path.Length))|$($_.Length)|$((Get-FileHash $_.FullName).Hash)"
+    }) -join "`n"
+    return (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes($blob)))).Hash
+}
+
+function Install-Copy($srcAbs, $destAbs, $kind) {
+    $dstDir = $destAbs | Split-Path -Parent
+    if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
+    if ($kind -eq 'archivo') { Copy-Item $srcAbs $destAbs -Force; return }
+    if (Test-Path $destAbs) { Remove-Item $destAbs -Recurse -Force }
+    Copy-Item $srcAbs $dstDir -Recurse -Force
+    foreach ($j in @('__pycache__','node_modules','.git')) {
+        Get-ChildItem $destAbs -Recurse -Force -Directory -Filter $j -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
     }
 }
 
-$plan = if ($Agent) { @{ $Agent = (Get-InstallPlan)[$Agent] } } else { Get-InstallPlan }
-
+# --- ejecución ---------------------------------------------------------------
 $ledgerPath = Join-Path $PSScriptRoot 'ledger.json'
 $ledger = if (Test-Path $ledgerPath) { Get-Content $ledgerPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{ installs = @() } }
 
-$stale = $false
-$results = @()
-foreach ($agentName in $plan.Keys) {
-    foreach ($item in $plan[$agentName]) {
-        $dest = Resolve-Dest $agentName $item
-        if (-not $dest) { continue }
-        $isFolder = [bool]$item.dir
-        $src = if ($isFolder) { $item.dir } else { $item.src }
-        $srcRel = $src.Substring($Canon.Length).TrimStart('\','/')
-        $entry = "$agentName :: $srcRel"
-        $same = (Test-Path $dest) -and ((Get-FileHash $src).Hash -eq (Get-FileHash $dest).Hash)
-        if ($same) { $results += "$entry -> SINCRONIZADO"; continue }
-        $results += "$entry -> DESACTUALIZADO"
-        if ($Verify) { $stale = $true; continue }
-        $dstDir = $dest | Split-Path -Parent
-        if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
-        if ($isFolder) {
-            # copia espejo de la carpeta, sin basuras
-            $junk = '__pycache__','node_modules','.git'
-            Copy-Item $src $dstDir -Recurse -Force
-            foreach ($j in $junk) {
-                Get-ChildItem $dstDir -Recurse -Force -Directory -Filter $j -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
-            }
-        } else {
-            Copy-Item $src $dest -Force
+$sources = Get-CanonSources
+$srcMap = @{}   # rel -> @{ kind; src }
+foreach ($s in $sources) { $srcMap[$s.rel] = $s }
+$targets = @{}
+foreach ($s in $sources) {
+    $targets[$s.rel] = @{ src = $s.rel; dest = (Get-UniversalDest $s.rel); kind = $s.kind }
+}
+
+# puentes del ledger: destinos que ya existen y mapean a una fuente canónica
+$keepInstalls = @()
+foreach ($inst in @($ledger.installs)) {
+    $destAbs = Get-BridgeDest $inst.dest ''
+    $srcRel = $inst.source
+    # fuentes renombradas: el nombre del dest dir manda para buscar en canon\skills\
+    if ($srcMap.ContainsKey($srcRel)) {
+        if ($srcRel -eq 'AGENTS.md' -or (-not ($destAbs -match [regex]::Escape((Join-Path $Home_ '.agents'))))) {
+            # puente solo para destinos distintos del universal (evita duplicar la fila)
+            if ($targets[$srcRel].dest -ne $destAbs) {
+                $targets["$srcRel|bridge:" + (Get-Random)] = @{ src = $srcRel; dest = $destAbs; kind = $inst.kind; inst = $inst }
+            } else { $keepInstalls += $inst }
+        } else { $keepInstalls += $inst }
+    } else {
+        # retirada: el canon ya no tiene esta fuente -> copia puente obsoleta
+        if (Test-Path $destAbs) {
+            if (-not $Verify) { Remove-Item $destAbs -Recurse -Force -ErrorAction SilentlyContinue; Write-Host "retirada: $($inst.dest)" }
+            else { Write-Host "retirada pendiente: $($inst.dest)"; exit 1 }
         }
-        $installs = @($ledger.installs | Where-Object { $_.agent -ne $agentName -or $_.source -ne $srcRel }) +
-            [pscustomobject]@{
-                agent = $agentName; source = $srcRel
-                kind = if ($isFolder) { 'carpeta' } else { 'archivo' }
-                dest = $dest.Replace("$Home_\", '~\')
-            }
-        $ledger = [pscustomobject]@{ installs = $installs }
-        Write-Host "instalado: $entry"
+        # y su entrada del ledger muere
     }
 }
 
-$results | ForEach-Object { Write-Host $_ }
+$stale = $false
+foreach ($key in $targets.Keys) {
+    $t = $targets[$key]
+    $srcAbs = Join-Path $Canon $t.src
+    $entry = "$($t.dest.Replace("$Home_\", '~\')) <- $($t.src)"
+    $same = ((Get-Fingerprint $srcAbs $t.kind) -eq (Get-Fingerprint $t.dest $t.kind))
+    if ($same) {
+        Write-Host "SINCRONIZADO: $entry"
+        if ($t.inst) { $keepInstalls += $t.inst }
+        continue
+    }
+    Write-Host "DESACTUALIZADO: $entry"
+    if ($Verify) { $stale = $true; continue }
+    Install-Copy $srcAbs $t.dest $t.kind
+    if ($t.inst) { $keepInstalls += $t.inst }
+    else {
+        $keepInstalls += [pscustomobject]@{
+            agent = 'universal'; source = $t.src; kind = $t.kind
+            dest = $t.dest.Replace("$Home_\", '~\')
+        }
+    }
+    Write-Host "instalado: $entry"
+}
+
+# reconstrucción limpia del ledger (des-duplicada)
+$ledger = [pscustomobject]@{ installs = @($keepInstalls | Group-Object dest, source | ForEach-Object { $_.Group[0] }) }
 
 if ($Verify) {
     if ($stale) { exit 1 } else { Write-Host 'todo sincronizado'; exit 0 }
 }
 else {
     $ledger | ConvertTo-Json -Depth 4 | Set-Content $ledgerPath -Encoding utf8
+    Write-Host 'ledger actualizado.'
 }

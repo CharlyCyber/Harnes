@@ -1,22 +1,40 @@
 ﻿{
     "installs":  [
                      {
-                         "agent":  "opencode",
-                         "source":  "skills\\design-taste-frontend",
-                         "kind":  "carpeta",
-                         "dest":  "~\\.config\\opencode\\skills\\design-taste-frontend"
+                         "agent":  "universal",
+                         "source":  "AGENTS.md",
+                         "kind":  "archivo",
+                         "dest":  "~\\.agents\\AGENTS.md"
                      },
                      {
                          "agent":  "opencode",
-                         "source":  "skills\\find-skills",
+                         "source":  "skills\\charli-design",
                          "kind":  "carpeta",
-                         "dest":  "~\\.config\\opencode\\skills\\find-skills"
+                         "dest":  "~\\.config\\opencode\\skills\\charli-design"
                      },
                      {
                          "agent":  "opencode",
                          "source":  "AGENTS.md",
                          "kind":  "archivo",
                          "dest":  "~\\.config\\opencode\\AGENTS.md"
+                     },
+                     {
+                         "agent":  "universal",
+                         "source":  "skills\\charli-design",
+                         "kind":  "carpeta",
+                         "dest":  "~\\.agents\\skills\\charli-design"
+                     },
+                     {
+                         "agent":  "universal",
+                         "source":  "skills\\find-skills",
+                         "kind":  "carpeta",
+                         "dest":  "~\\.agents\\skills\\find-skills"
+                     },
+                     {
+                         "agent":  "opencode",
+                         "source":  "skills\\find-skills",
+                         "kind":  "carpeta",
+                         "dest":  "~\\.config\\opencode\\skills\\find-skills"
                      }
                  ]
 }
