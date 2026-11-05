@@ -1,4 +1,4 @@
-# secretos y locales — jamás commitear
+# secretos y locales - jamas commitear
 *.local.json
 .env
 .env.*
@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 Thumbs.db
 Desktop.ini
+
+# backups locales de migracion
+*.bak-*

@@ -1,146 +1,196 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
-  sync.ps1 — instalador del harnés de CHARLI (v0.3, NEUTRO)
+  sync.ps1 — sincronizador neutral del harnés de CHARLI (v0.4)
 
-  Estándar universal (sin planes por agente):
-    - Instrucciones: ~\.agents\AGENTS.md
-    - Skills activas del canon: ~\.agents\skills\<nombre>
+  Modelo:
+    canon (repo)  ->  almacén universal ~/.agents/skills  ->  junctions a cada cliente
 
-  Puentes (cero nombres de agentes): cada instalación previa registrada en
-  ledger.json se refresca desde el canon si su destino aún existe. Así, los
-  agentes ya configurados en tiempo pasado (p. ej. OpenCode) quedan al día sin
-  que este script conozca su nombre. Si el canon RETIRÓ una fuente, la copia
-  puente queda obsoleta y se elimina: el canon es la única fuente de verdad.
+  - El almacén universal es la única copia física de las skills activas.
+  - Cada cliente detectado (destino cuyo directorio padre existe) recibe una
+    junction al almacén: cero duplicación, cero drift entre agentes.
+  - Sin nombres de agentes en el código: los destinos viven en targets.json.
+  - Las skills retiradas del canon se podan del almacén y de las junctions.
 
   Uso:
-    sync.ps1        # instala/actualiza todo
-    sync.ps1 -Verify  # solo comprueba (sin cambios; exit 1 si desfasado)
+    sync.ps1            instala/actualiza todo
+    sync.ps1 -Verify    solo comprueba (exit 1 si hay drift)
 #>
 [CmdletBinding()]
 param([switch]$Verify)
 
 $ErrorActionPreference = 'Stop'
-$Canon = $PSScriptRoot | Split-Path -Parent
-$Home_ = [Environment]::GetFolderPath('UserProfile')
-$agentsskillDir = Join-Path $Home_ '.agents\skills'
+$Canon = Split-Path -Parent $PSScriptRoot
+$HomeDir = [Environment]::GetFolderPath('UserProfile')
+$Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+
+$targetsPath = Join-Path $PSScriptRoot 'targets.json'
+if (-not (Test-Path $targetsPath)) { throw "Falta sync\targets.json" }
+$cfg = Get-Content $targetsPath -Raw | ConvertFrom-Json
+
+$drift = $false
+function Note-Drift([string]$msg) { Write-Host "DRIFT: $msg"; $script:drift = $true }
+function Resolve-Home([string]$p) { return ($p -replace '^~', $HomeDir) -replace '/', '\' }
+
+function Test-IsLink([string]$p) {
+    if (-not (Test-Path -LiteralPath $p)) { return $false }
+    $item = Get-Item -LiteralPath $p -Force
+    return [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
+}
+function Get-LinkTarget([string]$p) {
+    $item = Get-Item -LiteralPath $p -Force
+    return @($item.Target)[0]
+}
+function Remove-Link([string]$p) {
+    # borra la junction, nunca su contenido
+    [IO.Directory]::Delete((Resolve-Path -LiteralPath $p).ProviderPath, $false)
+}
+function Backup-Path([string]$p) {
+    $bak = "$p.bak-$Stamp"
+    Move-Item -LiteralPath $p -Destination $bak -Force
+    Write-Host "backup: $p -> $bak"
+}
+function New-Junction([string]$link, [string]$target) {
+    $parent = Split-Path -Parent $link
+    if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    New-Item -ItemType Junction -Path $link -Target $target | Out-Null
+}
+
+function Get-Fingerprint([string]$path) {
+    # huella barata: ruta relativa + tamaño + mtime. Robocopy preserva timestamps,
+    # así que una edición real siempre cambia la huella; hashear 47 MB por pasada
+    # hacía que el sync muriera por timeout del entorno.
+    if (-not (Test-Path -LiteralPath $path)) { return $null }
+    $blob = (Get-ChildItem -LiteralPath $path -Recurse -File -Force |
+        Where-Object { $_.FullName -notmatch '\\__pycache__\\|\\node_modules\\|\\\.git\\' } |
+        Sort-Object FullName | ForEach-Object {
+            "$($_.FullName.Substring($path.Length))|$($_.Length)|$($_.LastWriteTimeUtc.Ticks)"
+        }) -join "`n"
+    return (Get-FileHash -InputStream ([IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes($blob)))).Hash
+}
 
 # --- fuentes del canon -------------------------------------------------------
-function Get-CanonSources {
-    $items = @(
-        @{ rel = 'AGENTS.md'; kind = 'archivo' }
-    )
-    $skillsRoot = Join-Path $Canon 'skills'
-    if (Test-Path $skillsRoot) {
-        foreach ($dir in Get-ChildItem $skillsRoot -Directory) {
-            if ((Test-Path (Join-Path $dir.FullName 'SKILL.md')) -and -not (Test-Path (Join-Path $dir.FullName '_DORMIDA.md'))) {
-                $items += @{ rel = "skills\$($dir.Name)"; kind = 'carpeta' }
+$canonSkills = @()
+$skillsRoot = Join-Path $Canon 'skills'
+foreach ($dir in Get-ChildItem -LiteralPath $skillsRoot -Directory) {
+    $skillMd = Join-Path $dir.FullName 'SKILL.md'
+    $dormida = Join-Path $dir.FullName '_DORMIDA.md'
+    if ((Test-Path -LiteralPath $skillMd) -and -not (Test-Path -LiteralPath $dormida)) {
+        $canonSkills += $dir.Name
+    }
+}
+$canonSkills = $canonSkills | Sort-Object
+
+# --- 1. almacén universal ----------------------------------------------------
+$universal = Resolve-Home $cfg.universal.skills
+if (-not (Test-Path -LiteralPath $universal)) {
+    if ($Verify) { Note-Drift "falta el almacén universal $universal" }
+    else { New-Item -ItemType Directory -Path $universal -Force | Out-Null }
+}
+
+$count = 0
+foreach ($name in $canonSkills) {
+    $src = Join-Path $skillsRoot $name
+    $dst = Join-Path $universal $name
+    $same = ((Get-Fingerprint $src) -eq (Get-Fingerprint $dst))
+    if ($same) { continue }
+    $count++
+    if ($Verify) { Note-Drift "skill desactualizada: $name" ; continue }
+    if (Test-Path -LiteralPath $dst) { Remove-Item -LiteralPath $dst -Recurse -Force }
+    robocopy $src $dst /E /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "robocopy falló copiando $name (exit $LASTEXITCODE)" }
+    Write-Host "skill instalada: $name"
+}
+
+# poda de huérfanas en el almacén
+if (Test-Path -LiteralPath $universal) {
+    foreach ($dir in Get-ChildItem -LiteralPath $universal -Directory) {
+        if ($canonSkills -notcontains $dir.Name) {
+            if (Test-Path -LiteralPath (Join-Path $dir.FullName 'SKILL.md')) {
+                if ($Verify) { Note-Drift "huérfana en almacén: $($dir.Name)" }
+                else { Remove-Item -LiteralPath $dir.FullName -Recurse -Force; Write-Host "podada: $($dir.Name)" }
             }
         }
     }
-    return $items
 }
 
-# destino universal para una fuente
-function Get-UniversalDest($rel) {
-    if ($rel -eq 'AGENTS.md') { return Join-Path $Home_ '.agents\AGENTS.md' }
-    return Join-Path $agentsskillDir (($rel -split '\\')[-1])
+# --- 2. instrucciones --------------------------------------------------------
+$instructionDests = @($cfg.universal.instructions) + @($cfg.instructions | ForEach-Object { $_.dest })
+foreach ($raw in $instructionDests) {
+    $dst = Resolve-Home $raw
+    $src = Join-Path $Canon 'AGENTS.md'
+    $same = (Test-Path -LiteralPath $dst) -and ((Get-FileHash -LiteralPath $src).Hash -eq (Get-FileHash -LiteralPath $dst).Hash)
+    if ($same) { continue }
+    if ($Verify) { Note-Drift "instrucciones desactualizadas: $raw"; continue }
+    if (Test-Path -LiteralPath $dst) { Backup-Path $dst }
+    $parent = Split-Path -Parent $dst
+    if (-not (Test-Path -LiteralPath $parent)) { continue }
+    Copy-Item -LiteralPath $src -Destination $dst -Force
+    Write-Host "instrucciones: $raw"
 }
 
-# puente: destino preexistente (ledger) → misma fuente relativa del canon
-function Get-BridgeDest([string]$storeDest, [string]$rel) {
-    # el dest del ledger se guarda tal cual, relativo a ~, jamás absoluto (regla 8)
-    return $storeDest -replace '^~\\', ($Home_ + '\')
-}
+# --- 3. clientes -------------------------------------------------------------
+foreach ($client in @($cfg.clients)) {
+    $path = Resolve-Home $client.path
+    $parent = Split-Path -Parent $path
+    if (-not (Test-Path -LiteralPath $parent)) { continue }   # cliente no instalado
 
-function Get-Fingerprint([string]$path, [string]$kind) {
-    if ($kind -eq 'archivo') {
-        if (-not (Test-Path $path)) { return $null }
-        return (Get-FileHash $path).Hash
-    }
-    if (-not (Test-Path $path)) { return $null }
-    $blob = (Get-ChildItem $path -Recurse -File | Sort-Object FullName | ForEach-Object {
-        "$($_.FullName.Substring($path.Length))|$($_.Length)|$((Get-FileHash $_.FullName).Hash)"
-    }) -join "`n"
-    return (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes($blob)))).Hash
-}
-
-function Install-Copy($srcAbs, $destAbs, $kind) {
-    $dstDir = $destAbs | Split-Path -Parent
-    if (-not (Test-Path $dstDir)) { New-Item -ItemType Directory -Path $dstDir -Force | Out-Null }
-    if ($kind -eq 'archivo') { Copy-Item $srcAbs $destAbs -Force; return }
-    if (Test-Path $destAbs) { Remove-Item $destAbs -Recurse -Force }
-    Copy-Item $srcAbs $dstDir -Recurse -Force
-    foreach ($j in @('__pycache__','node_modules','.git')) {
-        Get-ChildItem $destAbs -Recurse -Force -Directory -Filter $j -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
-    }
-}
-
-# --- ejecución ---------------------------------------------------------------
-$ledgerPath = Join-Path $PSScriptRoot 'ledger.json'
-$ledger = if (Test-Path $ledgerPath) { Get-Content $ledgerPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{ installs = @() } }
-
-$sources = Get-CanonSources
-$srcMap = @{}   # rel -> @{ kind; src }
-foreach ($s in $sources) { $srcMap[$s.rel] = $s }
-$targets = @{}
-foreach ($s in $sources) {
-    $targets[$s.rel] = @{ src = $s.rel; dest = (Get-UniversalDest $s.rel); kind = $s.kind }
-}
-
-# puentes del ledger: destinos que ya existen y mapean a una fuente canónica
-$keepInstalls = @()
-foreach ($inst in @($ledger.installs)) {
-    $destAbs = Get-BridgeDest $inst.dest ''
-    $srcRel = $inst.source
-    # fuentes renombradas: el nombre del dest dir manda para buscar en canon\skills\
-    if ($srcMap.ContainsKey($srcRel)) {
-        if ($srcRel -eq 'AGENTS.md' -or (-not ($destAbs -match [regex]::Escape((Join-Path $Home_ '.agents'))))) {
-            # puente solo para destinos distintos del universal (evita duplicar la fila)
-            if ($targets[$srcRel].dest -ne $destAbs) {
-                $targets["$srcRel|bridge:" + (Get-Random)] = @{ src = $srcRel; dest = $destAbs; kind = $inst.kind; inst = $inst }
-            } else { $keepInstalls += $inst }
-        } else { $keepInstalls += $inst }
-    } else {
-        # retirada: el canon ya no tiene esta fuente -> copia puente obsoleta
-        if (Test-Path $destAbs) {
-            if (-not $Verify) { Remove-Item $destAbs -Recurse -Force -ErrorAction SilentlyContinue; Write-Host "retirada: $($inst.dest)" }
-            else { Write-Host "retirada pendiente: $($inst.dest)"; exit 1 }
-        }
-        # y su entrada del ledger muere
-    }
-}
-
-$stale = $false
-foreach ($key in $targets.Keys) {
-    $t = $targets[$key]
-    $srcAbs = Join-Path $Canon $t.src
-    $entry = "$($t.dest.Replace("$Home_\", '~\')) <- $($t.src)"
-    $same = ((Get-Fingerprint $srcAbs $t.kind) -eq (Get-Fingerprint $t.dest $t.kind))
-    if ($same) {
-        Write-Host "SINCRONIZADO: $entry"
-        if ($t.inst) { $keepInstalls += $t.inst }
-        continue
-    }
-    Write-Host "DESACTUALIZADO: $entry"
-    if ($Verify) { $stale = $true; continue }
-    Install-Copy $srcAbs $t.dest $t.kind
-    if ($t.inst) { $keepInstalls += $t.inst }
-    else {
-        $keepInstalls += [pscustomobject]@{
-            agent = 'universal'; source = $t.src; kind = $t.kind
-            dest = $t.dest.Replace("$Home_\", '~\')
+    if ($client.mode -eq 'dir-junction') {
+        if (Test-Path -LiteralPath $path) {
+            if (Test-IsLink $path) {
+                $target = Get-LinkTarget $path
+                if ($target -ne $universal) {
+                    if ($Verify) { Note-Drift "junction con destino viejo: $($client.id)" ; continue }
+                    Remove-Link $path; New-Junction $path $universal
+                    Write-Host "junction reparada: $($client.id)"
+                }
+            } else {
+                if ($Verify) { Note-Drift "copia real en vez de junction: $($client.id)" ; continue }
+                Backup-Path $path; New-Junction $path $universal
+                Write-Host "junction creada: $($client.id)"
+            }
+        } else {
+            if ($Verify) { Note-Drift "falta junction: $($client.id)" ; continue }
+            New-Junction $path $universal
+            Write-Host "junction creada: $($client.id)"
         }
     }
-    Write-Host "instalado: $entry"
+    elseif ($client.mode -eq 'entry-junction') {
+        if (-not (Test-Path -LiteralPath $path)) {
+            if ($Verify) { Note-Drift "falta carpeta de cliente: $($client.id)" ; continue }
+            New-Item -ItemType Directory -Path $path -Force | Out-Null
+        }
+        $preserve = @($client.preserve)
+        foreach ($name in $canonSkills) {
+            $link = Join-Path $path $name
+            if (Test-Path -LiteralPath $link) {
+                if (Test-IsLink $link) {
+                    if ((Get-LinkTarget $link) -ne (Join-Path $universal $name)) {
+                        if ($Verify) { Note-Drift "entry-junction rota: $($client.id)/$name" ; continue }
+                        Remove-Link $link; New-Junction $link (Join-Path $universal $name)
+                    }
+                } else {
+                    if ($Verify) { Note-Drift "copia real en $($client.id)/$name" ; continue }
+                    Backup-Path $link; New-Junction $link (Join-Path $universal $name)
+                }
+            } else {
+                if ($Verify) { Note-Drift "falta entry-junction: $($client.id)/$name" ; continue }
+                New-Junction $link (Join-Path $universal $name)
+            }
+        }
+        foreach ($dir in Get-ChildItem -LiteralPath $path -Directory -Force) {
+            if ($canonSkills -contains $dir.Name) { continue }
+            if ($preserve -contains $dir.Name) { continue }
+            if (-not (Test-IsLink $dir.FullName)) { continue }
+            if ($Verify) { Note-Drift "entry-junction huérfana: $($client.id)/$($dir.Name)" ; continue }
+            Remove-Link $dir.FullName
+            Write-Host "podada: $($client.id)/$($dir.Name)"
+        }
+    }
 }
 
-# reconstrucción limpia del ledger (des-duplicada)
-$ledger = [pscustomobject]@{ installs = @($keepInstalls | Group-Object dest, source | ForEach-Object { $_.Group[0] }) }
-
+# --- resumen -----------------------------------------------------------------
 if ($Verify) {
-    if ($stale) { exit 1 } else { Write-Host 'todo sincronizado'; exit 0 }
+    if ($drift) { Write-Host 'resultado: DRIFT'; exit 1 }
+    Write-Host 'resultado: todo sincronizado'; exit 0
 }
-else {
-    $ledger | ConvertTo-Json -Depth 4 | Set-Content $ledgerPath -Encoding utf8
-    Write-Host 'ledger actualizado.'
-}
+Write-Host ("listo: {0} skills activas, {1} actualizadas" -f $canonSkills.Count, $count)

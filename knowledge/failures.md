@@ -2,6 +2,15 @@
 
 Cada fallo del agente (del Agente Universal o de este harnés) queda registrado aquí y, si procede, se convierte en una regla en AGENTS.md, un hook o una skill. Sin evidencia no se añade regla.
 
+## 2026-11-05 — Consolidación del canon: copias anidadas, junctions colgantes y secretos repartidos
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| 18 skills del árbol de OpenCode contenían una copia de sí mismas (`skill/skill/`), duplicando su peso (p. ej. `brag` 31,6 MB → 15,8 MB reales). | Vendoreo con `Copy-Item -Recurse` sobre un destino ya existente, sin sanear antes. | Canon reconstruido sin anidados; `doctor.ps1` falla si detecta `skills/<n>/<n>`. |
+| `.kilocode/skills` tenía 12 junctions apuntando a `~/.agents/skills/<n>` que ya no existían (skills fantasma que contaban como "exclusivas"). | La purga anterior borró los destinos pero no los enlaces. | Kilocode eliminado por completo (CLI, extensión, `~/.kilocode`, `~/.config/kilo`); backup en `Documents\Backups`. `sync.ps1` borra enlaces con `Directory.Delete(false)` para no seguir nunca el destino. |
+| Keys de Firecrawl, Apify, Context7 y GitHub OAuth en texto plano repartidas por `~/.gemini/settings.json`, tres `mcp_config.json` de Antigravity y decenas de logs de sesión. | Cada agente mantiene su propia copia de config; los secretos se pegaron a mano en cada una. | Configs reescritas con placeholders `${VAR}`; logs redactados; `doctor.ps1` escanea el perfil y falla si aparece un patrón de key. Rotación pendiente del operador. |
+| El sync moría por timeout del entorno: hasheaba ~47 MB (SHA-256 por archivo) en cada pasada. | Fingerprint criptográfico innecesario para comparar árboles. | Huella barata (ruta + tamaño + mtime UTC); `robocopy` preserva timestamps, así que una edición real siempre se detecta. |
+
 ## 2026-11-05 — Apagón total de MCPs, config legacy que resucita lo retirado y keys en texto plano
 
 | Fallo observado | Causa raíz | Mitigación adoptada |

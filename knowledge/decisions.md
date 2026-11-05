@@ -2,6 +2,15 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-11-05 (cierre)
+
+- **Canon completo y reproducible:** 34 skills activas (23,5 MB) viven en `skills/`. El sync ya no depende de lo que hubiera en disco: reconstruye desde el canon.
+- **Sync v0.4 con junctions:** una sola copia física en `~/.agents/skills`; claude, gemini, continue, qwen, factory, crush, devin y goose reciben junction de directorio; codex recibe junction por entrada (preserva `.system`). OpenCode lee el almacén universal de forma nativa, así que se eliminó `~/.config/opencode/skills` (backup en `skills.bak-20261105-125445`). Beneficio medido: 16 skills duplicadas en hasta 8 sitios → 1 copia.
+- **`sync/ledger.json` retirado:** el modelo de "puentes por ledger" se sustituye por `targets.json` (datos declarativos). Menos estado, misma neutralidad.
+- **Kilocode eliminado por completo:** `@kilocode/cli` (npm global), extensión `kilocode.kilo-code-7.3.1`, `~/.kilocode` y `~/.config/kilo`. Backup de las skills y settings en `Documents\Backups\kilocode-backup-20261105.zip`.
+- **Instrucciones unificadas:** `AGENTS.md` se replica a `~/.agents/AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `~/.codex/AGENTS.md`, `QWEN.md` y `~/.factory/AGENTS.md`. El `GEMINI.md` legacy (prompt del sistema anterior, UTF-8 corrupto) quedó reemplazado y respaldado.
+- **Secretos:** todas las configs MCP del perfil usan `${VAR}`; logs redactados. Queda pendiente que el operador rote las keys y las fije con `setx`.
+
 ## 2026-11-05
 
 - **Reparación del stack MCP (7 intentos → 3 operativos):** se conserva `chrome-devtools`, `context7` y `apify`; `firecrawl` sigue en `enabled: false` por egress bloqueado. El problema no era la red ni las keys sino el arranque en frío de `npx`: los paquetes se instalan globalmente y la config mantiene `npx -y paquete@version` (portable, sin rutas absolutas). Evidencia y mediciones en `failures.md` y `mcps.md`.

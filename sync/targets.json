@@ -1,0 +1,25 @@
+{
+  "version": 4,
+  "universal": {
+    "skills": "~/.agents/skills",
+    "instructions": "~/.agents/AGENTS.md"
+  },
+  "instructions": [
+    { "source": "AGENTS.md", "dest": "~/.gemini/GEMINI.md" },
+    { "source": "AGENTS.md", "dest": "~/.claude/CLAUDE.md" },
+    { "source": "AGENTS.md", "dest": "~/.codex/AGENTS.md" },
+    { "source": "AGENTS.md", "dest": "~/.qwen/QWEN.md" },
+    { "source": "AGENTS.md", "dest": "~/.factory/AGENTS.md" }
+  ],
+  "clients": [
+    { "id": "claude",   "path": "~/.claude/skills",        "mode": "dir-junction" },
+    { "id": "gemini",   "path": "~/.gemini/skills",        "mode": "dir-junction" },
+    { "id": "continue", "path": "~/.continue/skills",      "mode": "dir-junction" },
+    { "id": "qwen",     "path": "~/.qwen/skills",          "mode": "dir-junction" },
+    { "id": "factory",  "path": "~/.factory/skills",       "mode": "dir-junction" },
+    { "id": "crush",    "path": "~/.config/crush/skills",  "mode": "dir-junction" },
+    { "id": "devin",    "path": "~/.config/devin/skills",  "mode": "dir-junction" },
+    { "id": "goose",    "path": "~/.config/goose/skills",  "mode": "dir-junction" },
+    { "id": "codex",    "path": "~/.codex/skills",         "mode": "entry-junction", "preserve": [".system"] }
+  ]
+}

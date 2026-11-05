@@ -1,4 +1,4 @@
-# Harnás de CHARLI v0.1
+# Harnás de CHARLI v0.4
 
 Harnés agéntico portable multi-agente, disk-first. Canon único; las copias instaladas son derivadas reproducibles.
 
@@ -7,9 +7,9 @@ Harnés agéntico portable multi-agente, disk-first. Canon único; las copias in
 ```
 AGENTS.md            reglas ratchet (cada línea trazable a knowledge/failures.md)
 knowledge/           memoria disk-first: identity, decisions, failures
-skills/              catálogo (vacío al inicio; estándar agentskills.io)
+skills/              catálogo canónico (34 activas; estándar agentskills.io)
 hooks/               enforcement (éxito silencioso, fallos verbosos)
-sync/                instalador determinista e idempotente para cada agente
+sync/                sync.ps1 (almacén universal + junctions) y doctor.ps1
 ```
 
 ## Principios
@@ -28,7 +28,7 @@ sync/                instalador determinista e idempotente para cada agente
 irm https://raw.githubusercontent.com/CharlyCyber/Harnes/main/install.ps1 | iex
 ```
 
-Contrato neutro: al abrir el repo, un agente lee `AGENTS.md` (reglas) + este README. `install.ps1` clona/actualiza el canon y corre `sync/sync.ps1`, que instala el estándar universal (`~\.agents\AGENTS.md` + `~\.agents\skills\`) y refresca los puentes previos por `ledger.json` — sin planes hardcodeados por IDE. Detalles: `sync/README.md`.
+Contrato neutro: al abrir el repo, un agente lee `AGENTS.md` (reglas) + este README. `install.ps1` clona/actualiza el canon y corre `sync\sync.ps1`, que deja **una sola copia física** de las skills en `~\.agents\skills\` y enlaza cada cliente detectado con una junction (cero duplicación, cero drift). Los destinos viven en `sync\targets.json`, no en el código. Verificación: `sync\doctor.ps1`. Detalles: `sync/README.md`.
 
 ## Referencia de diseño
 

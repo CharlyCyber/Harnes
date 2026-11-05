@@ -1,0 +1,26 @@
+# Normalización de finales de línea para un repo que se clona en cualquier SO.
+# Los scripts .sh deben quedar en LF también en Windows; PowerShell en CRLF.
+* text=auto eol=lf
+
+*.ps1   text eol=crlf
+*.psm1  text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# binarios: git no debe tocarlos
+*.mp3   binary
+*.mp4   binary
+*.mov   binary
+*.wav   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.zip   binary
+*.pdf   binary
