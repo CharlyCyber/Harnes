@@ -4,6 +4,12 @@
     "skills": "~/.agents/skills",
     "instructions": "~/.agents/AGENTS.md"
   },
+  "forbidden": [
+    {
+      "path": "~/.config/opencode/skills",
+      "reason": "OpenCode lee ~/.agents/skills de forma nativa; una copia local duplica la fuente de verdad. El CLI de HyperFrames repuebla esta ruta con versiones condensadas de sus skills."
+    }
+  ],
   "instructions": [
     { "source": "AGENTS.md", "dest": "~/.gemini/GEMINI.md" },
     { "source": "AGENTS.md", "dest": "~/.claude/CLAUDE.md" },

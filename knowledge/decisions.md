@@ -2,6 +2,13 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-11-05 (endurecimiento: CI, tests y rutas prohibidas)
+
+- **CI en cada push/PR.** `.github/workflows/doctor.yml` (runner Windows) corre los smoke tests, instala el harnés en un HOME limpio, pasa `-Verify`, `doctor.ps1` y compila los scripts Python de las skills. Razón: el sistema dependía de que el operador ejecutara el doctor a mano; un canon roto o una ruta prohibida que reaparece no se detectaban solos.
+- **Smoke tests con HOME y canon desechables.** `sync/tests/run-tests.ps1` (29 comprobaciones) usa `HARNES_HOME` y `HARNES_CANON` con un canon fixture de 2 skills: rápido, determinista y sin tocar el perfil real. Razón: los dos bugs del motor encontrados al escribirlos (drift falso en máquinas sin `.qwen`/`.factory`, y `.Count` desenvuelto en PS 5.1) eran invisibles en esta máquina.
+- **Rutas prohibidas declarativas.** `targets.json` gana `forbidden`; `doctor.ps1` falla si existen y `-SkipSync` permite auditar en entornos sin clientes. Razón: `~/.config/opencode/skills` es una segunda fuente de verdad que el CLI de HyperFrames repuebla; convertirla en junction permitiría podar el canon a través del enlace.
+- **`sync.ps1` sale con exit 0 explícito en modo instalación.** Antes el código de salida era el último de `robocopy` (1 = copiado), así que un pipeline no podía distinguir éxito de fallo.
+
 ## 2026-11-05 (evaluación de 6 repos externos)
 
 - **Solo se adopta `notfound-security-audit`, fusionado en `security-audit`.** Era el único que aportaba una capacidad inexistente: escáner real con reglas, dependencias y estados de confianza. Se conserva el checklist propio de 19 puntos y `audit.py`; se añade el motor `nfaudit` con su licencia MIT y atribución.

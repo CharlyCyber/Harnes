@@ -19,8 +19,10 @@
 param([switch]$Verify)
 
 $ErrorActionPreference = 'Stop'
-$Canon = Split-Path -Parent $PSScriptRoot
-$HomeDir = [Environment]::GetFolderPath('UserProfile')
+# Overrides de test/CI (sync\tests): permiten ejecutar el motor contra un HOME
+# y un canon desechables. En uso normal no se definen.
+$Canon = if ($env:HARNES_CANON) { $env:HARNES_CANON } else { Split-Path -Parent $PSScriptRoot }
+$HomeDir = if ($env:HARNES_HOME) { $env:HARNES_HOME } else { [Environment]::GetFolderPath('UserProfile') }
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 
 $targetsPath = Join-Path $PSScriptRoot 'targets.json'
@@ -120,13 +122,16 @@ if (Test-Path -LiteralPath $universal) {
 $instructionDests = @($cfg.universal.instructions) + @($cfg.instructions | ForEach-Object { $_.dest })
 foreach ($raw in $instructionDests) {
     $dst = Resolve-Home $raw
+    $parent = Split-Path -Parent $dst
+    # Cliente no instalado: ni se instala ni cuenta como drift. Sin esta guarda,
+    # -Verify fallaba siempre en máquinas sin .qwen/.factory y el doctor nunca
+    # salía en verde fuera de este PC.
+    if (-not (Test-Path -LiteralPath $parent)) { continue }
     $src = Join-Path $Canon 'AGENTS.md'
     $same = (Test-Path -LiteralPath $dst) -and ((Get-FileHash -LiteralPath $src).Hash -eq (Get-FileHash -LiteralPath $dst).Hash)
     if ($same) { continue }
     if ($Verify) { Note-Drift "instrucciones desactualizadas: $raw"; continue }
     if (Test-Path -LiteralPath $dst) { Backup-Path $dst }
-    $parent = Split-Path -Parent $dst
-    if (-not (Test-Path -LiteralPath $parent)) { continue }
     Copy-Item -LiteralPath $src -Destination $dst -Force
     Write-Host "instrucciones: $raw"
 }
@@ -197,3 +202,4 @@ if ($Verify) {
     Write-Host 'resultado: todo sincronizado'; exit 0
 }
 Write-Host ("listo: {0} skills activas, {1} actualizadas" -f $canonSkills.Count, $count)
+exit 0

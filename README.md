@@ -10,6 +10,8 @@ knowledge/           memoria disk-first: identity, decisions, failures
 skills/              catálogo canónico (34 activas; estándar agentskills.io)
 hooks/               enforcement (éxito silencioso, fallos verbosos)
 sync/                sync.ps1 (almacén universal + junctions) y doctor.ps1
+sync/tests/          smoke tests del motor (HOME y canon desechables)
+.github/workflows/   CI: tests + sync + doctor en cada push y PR
 ```
 
 ## Principios

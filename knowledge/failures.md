@@ -2,6 +2,16 @@
 
 Cada fallo del agente (del Agente Universal o de este harnés) queda registrado aquí y, si procede, se convierte en una regla en AGENTS.md, un hook o una skill. Sin evidencia no se añade regla.
 
+## 2026-11-05 — Segunda fuente de verdad en OpenCode y bugs que solo aparecen en una máquina limpia
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| `~/.config/opencode/skills` reapareció 22 minutos después de borrarla y de verificar que no existía: carpeta real con 5 skills de HyperFrames en versión condensada (7 KB frente a 20 KB del canon). | El CLI de HyperFrames escribe sus skills en esa ruta cuando detecta OpenCode y reconcilia el directorio, podando lo que no reconoce. [Likely] Es el mismo proceso que hizo desaparecer 7 skills del almacén universal. | Ruta declarada en `forbidden` dentro de `targets.json`; `doctor.ps1` falla si existe. Prohibido convertirla en junction: el proceso podaría las 34 skills del canon a través del enlace. |
+| `sync.ps1 -Verify` marcaba drift permanente en una máquina sin `.qwen` ni `.factory`: la instalación saltaba esas instrucciones pero la verificación las contaba como desactualizadas. El doctor nunca habría salido verde fuera de este PC. | La guarda "cliente no instalado" estaba después del `Backup-Path`, no antes de comparar. | Guarda de directorio padre movida al inicio del bucle de instrucciones: lo que no se instala tampoco cuenta como drift. Detectado por el primer test con un HOME desechable. |
+| La comprobación de rutas prohibidas no encontraba nada con una sola entrada en `targets.json`. | Envolver con `@()` la entrada de un `Where-Object` no envuelve su salida: la asignación se desenvuelve y `.Count` sobre un `PSCustomObject` no vale 1 en PowerShell 5.1. | Pipeline envuelto en `@()` al asignar. Cubierto por el test 7. |
+
+Ambos bugs del motor llevaban tiempo ahí y ninguno se veía en la máquina del operador: los encontró el primer smoke test con `HARNES_HOME` desechable. De ahí que los tests y el CI pasen a ser parte del harnés, no un extra.
+
 ## 2026-11-05 — Siete skills desaparecen solas y el sync no converge
 
 | Fallo observado | Causa raíz | Mitigación adoptada |

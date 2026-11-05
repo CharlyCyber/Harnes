@@ -6,16 +6,21 @@
     1. Canon: SKILL.md presente, frontmatter mínimo, <500 líneas, sin carpetas anidadas.
     2. JSON válido: sync\targets.json y la config de OpenCode si existe.
     3. Sincronización: canon == almacén universal == clientes (delegado en sync.ps1 -Verify).
-    4. Secretos: hook del repo + patrones de API key en configs del perfil.
+    4. Rutas prohibidas declaradas en targets.json (deben estar ausentes).
+    5. Secretos: hook del repo + patrones de API key en configs del perfil.
 
-  Uso: doctor.ps1   (exit 0 = todo bien, exit 1 = fallos)
+  Uso: doctor.ps1 [-SkipSync]   (exit 0 = todo bien, exit 1 = fallos)
+
+  -SkipSync: omite la verificación de sincronización (útil en entornos sin
+  clientes instalados, p. ej. CI o un HOME desechable).
 #>
 [CmdletBinding()]
-param()
+param([switch]$SkipSync)
 
 $ErrorActionPreference = 'Stop'
-$Canon = Split-Path -Parent $PSScriptRoot
-$HomeDir = [Environment]::GetFolderPath('UserProfile')
+# Overrides de test/CI, igual que en sync.ps1.
+$Canon = if ($env:HARNES_CANON) { $env:HARNES_CANON } else { Split-Path -Parent $PSScriptRoot }
+$HomeDir = if ($env:HARNES_HOME) { $env:HARNES_HOME } else { [Environment]::GetFolderPath('UserProfile') }
 $fail = 0
 $warn = 0
 
@@ -54,16 +59,44 @@ foreach ($j in @((Join-Path $PSScriptRoot 'targets.json'), (Join-Path $HomeDir '
     catch { Fail "JSON inválido: $($j.Replace($HomeDir,'~'))" }
 }
 
-# --- 3. sincronización -----------------------------------------------------
-$sync = Join-Path $PSScriptRoot 'sync.ps1'
-$out = & $sync -Verify 2>&1 | Out-String
-if ($LASTEXITCODE -eq 0) { Ok 'sincronización: canon == universal == clientes' }
-else {
-    Fail 'sincronización con drift'
-    ($out -split "`n" | Where-Object { $_ -match 'DRIFT' }) | ForEach-Object { Write-Host "     $($_.Trim())" }
+# --- 3. rutas prohibidas --------------------------------------------------
+# Una ruta prohibida es una segunda fuente de verdad conocida (p. ej. el CLI de
+# HyperFrames repoblando una carpeta local de skills en OpenCode). Si reaparece,
+# el doctor falla: significa que algo volvió a escribir donde no debe.
+$targetsPath = Join-Path $PSScriptRoot 'targets.json'
+if (Test-Path -LiteralPath $targetsPath) {
+    $tcfg = $null
+    try { $tcfg = Get-Content -LiteralPath $targetsPath -Raw | ConvertFrom-Json } catch { $tcfg = $null }
+    # @() envolviendo el pipeline: con un solo elemento la asignación se
+    # desenvuelve y un PSCustomObject no responde a .Count en PS 5.1.
+    $forbiddenCfg = @(@($tcfg.forbidden) | Where-Object { $_ -and $_.path })
+    if ($forbiddenCfg.Count -gt 0) {
+        $found = 0
+        foreach ($f in $forbiddenCfg) {
+            $p = ($f.path -replace '^~', $HomeDir) -replace '/', '\'
+            if (Test-Path -LiteralPath $p) {
+                $found++
+                Fail "ruta prohibida existe: $($f.path) — $($f.reason)"
+            }
+        }
+        if ($found -eq 0) { Ok "rutas prohibidas: ausentes ($($forbiddenCfg.Count) declaradas)" }
+    }
 }
 
-# --- 4. secretos -----------------------------------------------------------
+# --- 4. sincronización -----------------------------------------------------
+if ($SkipSync) {
+    Ok 'sincronización: omitida (-SkipSync)'
+} else {
+    $sync = Join-Path $PSScriptRoot 'sync.ps1'
+    $out = & $sync -Verify 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) { Ok 'sincronización: canon == universal == clientes' }
+    else {
+        Fail 'sincronización con drift'
+        ($out -split "`n" | Where-Object { $_ -match 'DRIFT' }) | ForEach-Object { Write-Host "     $($_.Trim())" }
+    }
+}
+
+# --- 5. secretos -----------------------------------------------------------
 $hook = Join-Path $Canon 'hooks\check-secrets.ps1'
 if (Test-Path -LiteralPath $hook) {
     $r = & $hook 2>&1 | Out-String
@@ -88,3 +121,5 @@ Write-Host ''
 if ($fail -gt 0) { Write-Host "RESULTADO: $fail fallo(s), $warn aviso(s)"; exit 1 }
 Write-Host "RESULTADO: sano ($warn aviso(s))"
 exit 0
+
+

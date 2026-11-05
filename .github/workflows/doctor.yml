@@ -1,0 +1,49 @@
+name: doctor
+
+# El repositorio se valida a sí mismo en cada push: si el canon se rompe, el
+# sync deja de converger o una ruta prohibida reaparece, esto se pone en rojo
+# sin depender de que alguien ejecute doctor.ps1 a mano.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: doctor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  doctor:
+    name: doctor (windows)
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Smoke tests del sincronizador
+        shell: pwsh
+        run: ./sync/tests/run-tests.ps1
+
+      - name: Instalar el harnés en un HOME limpio
+        shell: pwsh
+        run: ./sync/sync.ps1
+
+      - name: Verificar convergencia
+        shell: pwsh
+        run: ./sync/sync.ps1 -Verify
+
+      - name: Doctor
+        shell: pwsh
+        run: ./sync/doctor.ps1
+
+      - name: Sintaxis de los scripts Python de las skills
+        shell: pwsh
+        run: |
+          python -c "import ast,pathlib,sys; files=list(pathlib.Path('skills').rglob('*.py')); [ast.parse(p.read_text(encoding='utf-8'), str(p)) for p in files]; print(str(len(files)) + ' scripts Python OK')"
+          if ($LASTEXITCODE -ne 0) { throw 'algún script Python no compila' }
