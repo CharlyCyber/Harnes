@@ -28,19 +28,22 @@ Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heyg
 | `general-video` | Composiciones libres y montajes |
 | `remotion-to-hyperframes` | Port de Remotion (solo ese caso) |
 
-## Herramientas con upstream declarado (3)
+## Herramientas con upstream declarado (4)
 
-| Skill | Fuente |
-|---|---|
-| `brag` | latent-spaces/brag @ `fd7de7e4` |
-| `last30days` | mvanhorn/last30days-skill |
-| `reverse-engineer-anything` | morluto/rea |
+| Skill | Fuente | Licencia |
+|---|---|---|
+| `brag` | latent-spaces/brag @ `fd7de7e4` | — |
+| `last30days` | mvanhorn/last30days-skill | — |
+| `reverse-engineer-anything` | morluto/rea | — |
+| `security-audit` | Fusión 2026-11-05: checklist de 19 puntos propio + motor `nfaudit` de notfound404es/notfound-security-audit @ `c5d7c0e` | MIT (`LICENSE-upstream`) |
 
-## Stack base heredado (17)
+**`security-audit` — qué se fusionó:** se conserva el checklist propio de 19 puntos (P1–P19) y `scripts/audit.py` (incluye la pasada de secretos sobre el historial de git, que el motor externo no hace). Se incorporó el escáner `nfaudit` (stack, dependencias, patrones de inyección, configs, Docker, CI, runtimes), su base de reglas (`rules/`, 40 KB), los avisos locales (`data/`), las tres referencias (`references/`) y su licencia. Auditoría del código antes de adoptarlo: stdlib puro, sin `eval`/`exec`/`pickle`; red solo a `api.osv.dev` (opt-in `--osv`) y una petición GET a un dominio del usuario (opt-in `headers`). No se adoptó ninguna otra skill de los repos evaluados.
+
+## Stack base heredado (16)
 
 Sin upstream verificado todavía; provienen del stack anterior y se conservan por uso real. **Antes de modificar una, registrar su fuente.**
 
-`3d-web-designer`, `advanced-scraping`, `analizar-videos`, `cavecrew`, `caveman`, `chrome-devtools-mcp`, `context7`, `git-advanced-workflows`, `github-integration`, `mobile-design`, `no-mistakes`, `scroll-film-studio`, `security-audit`, `ship`, `triage`, `video-use`, `web-animation`.
+`3d-web-designer`, `advanced-scraping`, `analizar-videos`, `cavecrew`, `caveman`, `chrome-devtools-mcp`, `context7`, `git-advanced-workflows`, `github-integration`, `mobile-design`, `no-mistakes`, `scroll-film-studio`, `ship`, `triage`, `video-use`, `web-animation`.
 
 ## Retiradas
 

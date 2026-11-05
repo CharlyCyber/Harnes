@@ -2,6 +2,13 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-11-05 (evaluación de 6 repos externos)
+
+- **Solo se adopta `notfound-security-audit`, fusionado en `security-audit`.** Era el único que aportaba una capacidad inexistente: escáner real con reglas, dependencias y estados de confianza. Se conserva el checklist propio de 19 puntos y `audit.py`; se añade el motor `nfaudit` con su licencia MIT y atribución.
+- **`addyosmani/agent-skills` (25) y `mattpocock/skills` (40): no se instalan.** Solapan entre sí en la mitad de sus skills (TDD, review, spec, triage) y con el canon (`ship`, `git-advanced-workflows`, `security-audit`, `triage`). Quedan documentados como candidatos, no instalados: el ratchet exige un fallo real, no una skill buena.
+- **`affaan-m/ECC`: rechazado.** 4 701 archivos, 60 MB y 1 068 `SKILL.md` con la misma skill repetida por cliente (`.agents` 47, `.kiro` 43, `pi/core` 134) y por idioma (ja-JP 228, zh-CN 183). Sincronizarlo multiplicaría el catálogo por 30 y metería decenas de miles de tokens de descripciones en cada sesión.
+- **`HKUDS/Vibe-Trading` y `Anil-matcha/Open-Generative-AI`: no son repos de skills.** El primero es una app de trading con 90 skills de dominio financiero; el segundo no contiene ni un `SKILL.md`. No hay nada que sincronizar.
+
 ## 2026-11-05 (cierre)
 
 - **Canon completo y reproducible:** 34 skills activas (23,5 MB) viven en `skills/`. El sync ya no depende de lo que hubiera en disco: reconstruye desde el canon.

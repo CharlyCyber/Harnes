@@ -96,7 +96,10 @@ foreach ($name in $canonSkills) {
     $count++
     if ($Verify) { Note-Drift "skill desactualizada: $name" ; continue }
     if (Test-Path -LiteralPath $dst) { Remove-Item -LiteralPath $dst -Recurse -Force }
-    robocopy $src $dst /E /NFL /NDL /NJH /NJS /NP | Out-Null
+    # /MIR y no /E: el almacén es una copia derivada, así que los archivos que ya
+    # no existen en el canon (huérfanos dentro de una skill) deben desaparecer.
+    # Con /E se acumulaban y la huella nunca convergía.
+    robocopy $src $dst /MIR /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "robocopy falló copiando $name (exit $LASTEXITCODE)" }
     Write-Host "skill instalada: $name"
 }

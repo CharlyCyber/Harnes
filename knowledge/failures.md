@@ -2,6 +2,13 @@
 
 Cada fallo del agente (del Agente Universal o de este harnés) queda registrado aquí y, si procede, se convierte en una regla en AGENTS.md, un hook o una skill. Sin evidencia no se añade regla.
 
+## 2026-11-05 — Siete skills desaparecen solas y el sync no converge
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| 7 skills del stack HyperFrames (`general-video`, `hyperframes-animation`, `hyperframes-audio`, `hyperframes-core`, `hyperframes-creative`, `hyperframes-keyframes`, `hyperframes-studio`) desaparecieron de `~/.agents/skills` con el canon intacto; el catálogo del agente pasó de 34 a 27 sin error visible. | Un proceso externo al harnés escribe en `~/.agents/skills` (el importador de la app de skills reconcilia ese directorio con su cuenta y borra lo que no reconoce). [Likely] No hay log del harnés porque el borrado no lo hace el harnés. | `sync.ps1 -Verify` lo detecta como drift y `sync.ps1` restaura desde el canon; `doctor.ps1` lo reporta como fallo. Pendiente: ejecutar `-Verify` tras cualquier arranque de esa app, o excluir el directorio del importador. |
+| `sync.ps1 -Verify` seguía marcando 4 skills como "desactualizada" después de copiarlas. | `robocopy /E` copia pero no borra: un archivo huérfano dentro de la skill (`remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs`) hacía que la huella del destino nunca coincidiera con la del canon. | Copia del almacén universal pasa a `robocopy /MIR`: el destino es derivado y debe quedar idéntico, huérfanos incluidos. |
+
 ## 2026-11-05 — Consolidación del canon: copias anidadas, junctions colgantes y secretos repartidos
 
 | Fallo observado | Causa raíz | Mitigación adoptada |
