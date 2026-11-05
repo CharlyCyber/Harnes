@@ -2,6 +2,15 @@
 
 Cada fallo del agente (del Agente Universal o de este harnés) queda registrado aquí y, si procede, se convierte en una regla en AGENTS.md, un hook o una skill. Sin evidencia no se añade regla.
 
+## 2026-11-05 — Apagón total de MCPs, config legacy que resucita lo retirado y keys en texto plano
+
+| Fallo observado | Causa raíz | Mitigación adoptada |
+|---|---|---|
+| Los 7 MCP declarados fallaban en cada arranque con `Request timed out` a los ~36 s; sesión sin una sola herramienta MCP. | `npx` resolvía e instalaba el paquete en cada arranque (41.7 s medidos para context7) y el inicializador de OpenCode corta a los ~30 s. | Paquetes MCP instalados globalmente (`npm i -g`); con caché, `npx -y paquete@version` arranca en 1.3–8.9 s. Prerrequisito documentado en `mcps.md`. |
+| `markitdown`, `playwright` y `motion` seguían intentando conectar pese a la auditoría que los retiró, y `firecrawl` se activaba aunque la canónica lo apaga. | `~\.opencode\opencode.json` (ubicación heredada) se fusiona con la canónica; la auditoría del 2026-10-30 solo limpió `~\.config\opencode\opencode.json`. | Config legacy reducida a `{"$schema": ...}`; fuente única de MCP en la ruta canónica. |
+| `FIRECRAWL_API_KEY`, `APIFY_TOKEN` y `CONTEXT7_API_KEY` estaban escritas en texto plano en esa config. | Se escribieron antes de adoptar el patrón `${VAR}` y nunca se revisó la ubicación heredada. | Claves borradas del archivo; las keys reales viven solo en env de usuario. Recomendada rotación de Apify y Firecrawl (coste 5 min vs. auditar alcance). |
+| `knowledge/mcps.md` documentaba "4 operativos" y keys "ausentes en todo scope" cuando la realidad era la contraria. | El documento se escribió como estado puntual y no se revalidó al cambiar el entorno. | Estado re-medido (arranques, keys, egress) y `mcps.md` reescrito con fecha y evidencia. |
+
 ## 2026-10-31 — Vendoreo sin saneo y deslices de tipeo del agente
 
 | Fallo observado | Causa raíz | Mitigación adoptada |

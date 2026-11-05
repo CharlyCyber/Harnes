@@ -2,6 +2,12 @@
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
+## 2026-11-05
+
+- **Reparación del stack MCP (7 intentos → 3 operativos):** se conserva `chrome-devtools`, `context7` y `apify`; `firecrawl` sigue en `enabled: false` por egress bloqueado. El problema no era la red ni las keys sino el arranque en frío de `npx`: los paquetes se instalan globalmente y la config mantiene `npx -y paquete@version` (portable, sin rutas absolutas). Evidencia y mediciones en `failures.md` y `mcps.md`.
+- **Config legacy `~\.opencode\opencode.json` neutralizada:** era la que resucitaba `markitdown`/`playwright`/`motion` y la que guardaba tres API keys en texto plano. Queda solo `$schema`; única fuente de verdad en `~\.config\opencode\opencode.json`.
+- **Familia HyperFrames: no se fusiona.** 9 skills, 1 237 líneas y ~132 KB de cuerpo: fusionarlas obligaría a cargar todo el stack en cada tarea de vídeo (~35k tokens) y rompería el router (`hyperframes` → workflow). El coste real del catálogo son las descripciones (~1 línea por skill), no los cuerpos, que se cargan solo al invocar. Decisión: se mantiene la arquitectura router + dominio.
+
 ## 2026-10-31
 
 - **Tres órdenes del operador ejecutadas en una tanda:** (1) las 7 skills dormidas **eliminadas del canon por completo** (`ui-ux-pro-max`, `web-design-pipeline`, `web-design-strategist`, `shadcn`, `material-3`, `ui-stack-recipes`, `headroom`) — sin rastros; (2) **A/B de diseño cerrado por fusión:** `design-taste-frontend` + `frontend-polish` → **`charli-design`** (biblioteca de taste como cuerpo técnico + leyes de Impeccable como doctrina; veredicto: ninguna skill existente cubría mejor la dirección de arte, así que la fusión en 1 es lo correcto); (3) **sync v0.3 neutro:** estándar universal (`~\.agents\AGENTS.md` + `~\.agents\skills\`) + puentes gobernados por `ledger.json` — cero nombres de agentes; cualquier agente del mundo sincroniza con el enlace del repo (`README` → `install.ps1` → `sync`; y si su cliente no lee el estándar universal, él mismo copia y se registra en el ledger). Protocolo Codebuff documentado en `sync/README.md` (re-PUT manual con revision; riesgo anotado: los dirs locales de skills alimentan el importer de Freebuff al arrancar).
