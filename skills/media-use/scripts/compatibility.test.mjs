@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -43,7 +43,7 @@ test("published audio helpers import without the CLI package tree", () => {
 });
 
 for (const name of ["faceless-explainer", "pr-to-video", "product-launch-video"]) {
-  test(name + " assembles from its installed directory alone", () => {
+  test(name + " assembles from its installed directory alone", { skip: !existsSync(new URL("../../" + name, import.meta.url)) }, () => {
     const root = mkdtempSync(join(tmpdir(), "installed-workflow-"));
     try {
       const skill = join(root, name);

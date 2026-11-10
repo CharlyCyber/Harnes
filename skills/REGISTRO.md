@@ -1,6 +1,6 @@
 # Registro del Catálogo
 
-Estado 2026-11-05: **34 skills activas** en el canon. Cada una tiene una razón de comportamiento (ratchet); la procedencia se documenta cuando existe upstream verificable.
+Estado: **33 skills activas** y `cavecrew` dormida por dependencias ausentes. El perfil `core` activa 13; `all`, las 33. No se han eliminado skills por un supuesto solapamiento sin medir. Parte de la procedencia y licencias sigue pendiente de verificar.
 
 ## Adopciones propias
 
@@ -32,14 +32,14 @@ Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heyg
 
 | Skill | Fuente | Licencia |
 |---|---|---|
-| `brag` | latent-spaces/brag @ `fd7de7e4` | — |
+| `brag` | latent-spaces/brag @ `fd7de7e4` | MIT para código (`LICENSE.upstream`); licencia de música pendiente de verificar |
 | `last30days` | mvanhorn/last30days-skill | — |
 | `reverse-engineer-anything` | morluto/rea | — |
 | `security-audit` | Fusión 2026-11-05: checklist de 19 puntos propio + motor `nfaudit` de notfound404es/notfound-security-audit @ `c5d7c0e` | MIT (`LICENSE-upstream`) |
 
 **`security-audit` — qué se fusionó:** se conserva el checklist propio de 19 puntos (P1–P19) y `scripts/audit.py` (incluye la pasada de secretos sobre el historial de git, que el motor externo no hace). Se incorporó el escáner `nfaudit` (stack, dependencias, patrones de inyección, configs, Docker, CI, runtimes), su base de reglas (`rules/`, 40 KB), los avisos locales (`data/`), las tres referencias (`references/`) y su licencia. Auditoría del código antes de adoptarlo: stdlib puro, sin `eval`/`exec`/`pickle`; red solo a `api.osv.dev` (opt-in `--osv`) y una petición GET a un dominio del usuario (opt-in `headers`). No se adoptó ninguna otra skill de los repos evaluados.
 
-## Stack base heredado (16)
+## Stack base heredado (16; cavecrew dormida)
 
 Sin upstream verificado todavía; provienen del stack anterior y se conservan por uso real. **Antes de modificar una, registrar su fuente.**
 

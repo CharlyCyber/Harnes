@@ -1,0 +1,10 @@
+#!/bin/sh
+# Install only in this repo's Git hooks directory; do not override other hooks.
+root=$(git rev-parse --show-toplevel) || exit 1
+if command -v python3 >/dev/null 2>&1; then
+    exec python3 "$root/hooks/check_secrets.py" --repo "$root" --staged
+elif command -v python >/dev/null 2>&1; then
+    exec python "$root/hooks/check_secrets.py" --repo "$root" --staged
+fi
+echo 'Python 3 is required for the secret check.' >&2
+exit 1

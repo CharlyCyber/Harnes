@@ -24,7 +24,7 @@ Skill única de diseño del canon. Nació de la fusión de dos fuentes (proceden
 ## Contrato
 
 1. **La identidad va antes que la superficie.** Primero dirección (qué mundo visual se podría defender), después paleta y tipo, después layout. Nunca al revés.
-2. **Nada genérico = no entregado** (regla 10 del canon). Criterios de aceptación obligatorios: `knowledge/brand.md` (7 criterios gradables) + el test final de esta skill.
+2. **Nada genérico = no entregado** (regla 10 del canon). Criterios de aceptación obligatorios: `references/brand.md` (7 criterios gradables) + el test final de esta skill.
 3. **Verificación en navegador real.** El loop anti-slop solo cuenta con evidencia visual: construir → capturar → comparar → iterar usa `scripts/inspect.mjs` con el MCP `chrome-devtools`.
 4. **Un registro por pantalla.** Landing/portfolio = el diseño ES la experiencia (asimetría, display audaz, motion). App/dashboard = el diseño SIRVE (velocidad de escaneo, jerarquía de datos, cero fricción). Mezclarlos es slop.
 

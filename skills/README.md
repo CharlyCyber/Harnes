@@ -1,18 +1,11 @@
-# skills/
+# Skills
 
-Catálogo canónico. Ver `REGISTRO.md` para procedencia, licencias, stack base activo y decisiones (incluye difidas y descartadas con razón).
+Catálogo canónico con perfiles en `sync/targets.json`; ver `REGISTRO.md` para
+procedencia y límites. Cada skill usa `SKILL.md` y recursos opcionales en
+`scripts/`, `references/` o `assets/`. Un `_DORMIDA.md` la excluye del sync.
 
-```
-mi-skill/
-├── SKILL.md        # requerido: frontmatter (name, description) + instrucciones
-├── scripts/        # opcional: código ejecutable
-├── references/     # opcional: documentación on-demand
-└── assets/         # opcional: plantillas, recursos
-```
-
-Condiciones para añadir una skill (ratchet):
-
-1. Existe un comportamiento o fallo que la justifica (trazable en `knowledge/failures.md`).
-2. `SKILL.md` < 500 líneas; cuerpo < 5000 tokens; recursos con disclosure progresiva.
-3. Solo rutas relativas.
-4. Variante upstream registrada en `REGISTRO.md` con commit + licencia + `LICENSE-upstream`.
+Antes de adoptar una: justificar su utilidad, inspeccionar instrucciones y código,
+verificar licencia, fijar el commit y registrar procedencia. Popularidad no implica
+seguridad. Preferir referencias bajo demanda y descripciones breves; validar con
+`python sync/harnes.py doctor --skip-sync`. No instalar directamente con gestores
+globales si se pretende que el canon la gestione.

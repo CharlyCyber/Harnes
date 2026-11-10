@@ -1,6 +1,6 @@
 ---
 name: advanced-scraping
-description: Expert web scraping techniques using BeautifulSoup for static content and Playwright for dynamic/JS-heavy sites. Includes strategies for bypass, data extraction, and structural parsing. Use when: extracting data from websites, monitoring price changes, or building data-driven agents.
+description: "Expert web scraping techniques using BeautifulSoup for static content and Playwright for dynamic/JS-heavy sites. Includes strategies for bypass, data extraction, and structural parsing. Use when: extracting data from websites, monitoring price changes, or building data-driven agents."
 ---
 
 # Advanced Web Scraping
