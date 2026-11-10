@@ -1,0 +1,8 @@
+{
+  "description": "Catálogo opcional, no instalado automáticamente; consulta knowledge/mcps.md.",
+  "servers": {
+    "chrome-devtools": {"package": "chrome-devtools-mcp@1.6.0", "requires": []},
+    "context7": {"package": "@upstash/context7-mcp@3.2.5", "requires": []},
+    "apify": {"package": "@apify/actors-mcp-server@0.13.0", "requires": ["APIFY_TOKEN"]}
+  }
+}

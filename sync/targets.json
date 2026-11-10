@@ -1,31 +1,90 @@
 {
-  "version": 4,
+  "version": 5,
   "universal": {
-    "skills": "~/.agents/skills",
-    "instructions": "~/.agents/AGENTS.md"
+    "skills": "~/.agents/skills"
   },
-  "forbidden": [
+  "instructions": [
     {
-      "path": "~/.config/opencode/skills",
-      "reason": "OpenCode lee ~/.agents/skills de forma nativa; una copia local duplica la fuente de verdad. El CLI de HyperFrames repuebla esta ruta con versiones condensadas de sus skills."
+      "source": "instructions/global.md",
+      "dest": "~/.agents/AGENTS.md",
+      "always": true
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.claude/CLAUDE.md"
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.codex/AGENTS.md"
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.gemini/GEMINI.md"
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.qwen/QWEN.md"
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.factory/AGENTS.md"
+    },
+    {
+      "source": "instructions/global.md",
+      "dest": "~/.config/opencode/AGENTS.md"
     }
   ],
-  "instructions": [
-    { "source": "AGENTS.md", "dest": "~/.gemini/GEMINI.md" },
-    { "source": "AGENTS.md", "dest": "~/.claude/CLAUDE.md" },
-    { "source": "AGENTS.md", "dest": "~/.codex/AGENTS.md" },
-    { "source": "AGENTS.md", "dest": "~/.qwen/QWEN.md" },
-    { "source": "AGENTS.md", "dest": "~/.factory/AGENTS.md" }
-  ],
   "clients": [
-    { "id": "claude",   "path": "~/.claude/skills",        "mode": "dir-junction" },
-    { "id": "gemini",   "path": "~/.gemini/skills",        "mode": "dir-junction" },
-    { "id": "continue", "path": "~/.continue/skills",      "mode": "dir-junction" },
-    { "id": "qwen",     "path": "~/.qwen/skills",          "mode": "dir-junction" },
-    { "id": "factory",  "path": "~/.factory/skills",       "mode": "dir-junction" },
-    { "id": "crush",    "path": "~/.config/crush/skills",  "mode": "dir-junction" },
-    { "id": "devin",    "path": "~/.config/devin/skills",  "mode": "dir-junction" },
-    { "id": "goose",    "path": "~/.config/goose/skills",  "mode": "dir-junction" },
-    { "id": "codex",    "path": "~/.codex/skills",         "mode": "entry-junction", "preserve": [".system"] }
+    {
+      "id": "claude",
+      "path": "~/.claude/skills"
+    },
+    {
+      "id": "continue",
+      "path": "~/.continue/skills"
+    },
+    {
+      "id": "qwen",
+      "path": "~/.qwen/skills"
+    },
+    {
+      "id": "factory",
+      "path": "~/.factory/skills"
+    },
+    {
+      "id": "crush",
+      "path": "~/.config/crush/skills"
+    },
+    {
+      "id": "devin",
+      "path": "~/.config/devin/skills"
+    },
+    {
+      "id": "goose",
+      "path": "~/.config/goose/skills"
+    }
+  ],
+  "profiles": {
+    "core": [
+      "3d-web-designer",
+      "advanced-scraping",
+      "charli-design",
+      "chrome-devtools-mcp",
+      "context7",
+      "find-skills",
+      "git-advanced-workflows",
+      "github-integration",
+      "mobile-design",
+      "security-audit",
+      "ship",
+      "triage",
+      "web-animation"
+    ],
+    "all": "all"
+  },
+  "duplicate_sources": [
+    "~/.gemini/skills",
+    "~/.codex/skills",
+    "~/.config/opencode/skills"
   ]
 }

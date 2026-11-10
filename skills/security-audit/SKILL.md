@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Auditoría de seguridad read-only de webs y apps (incluidas las vibecodeadas): escáner offline de stack, dependencias y CVEs, secretos, inyección (SQLi, XSS, SSRF, ejecución de comandos), auth/cookies/CORS/cabeceras, Docker, CI y servicios externos (Supabase, Firebase), más el checklist de 19 puntos y la revisión manual de lo que ningún escáner ve (IDOR, RLS, lógica de negocio). Informes en MD/JSON/SARIF con estados confirmed / needs-review / preventive. Use antes de desplegar, al terminar una web, o cuando el operador diga "audita seguridad", "revisa seguridad", "checklist de seguridad", "security review", "busca vulnerabilidades" o pregunte si su sitio está afectado por un CVE.
+description: "Auditoría de seguridad read-only de webs y apps (incluidas las vibecodeadas): escáner offline de stack, dependencias y CVEs, secretos, inyección (SQLi, XSS, SSRF, ejecución de comandos), auth/cookies/CORS/cabeceras, Docker, CI y servicios externos (Supabase, Firebase), más el checklist de 19 puntos y la revisión manual de lo que ningún escáner ve (IDOR, RLS, lógica de negocio). Informes en MD/JSON/SARIF con estados confirmed / needs-review / preventive. Use antes de desplegar, al terminar una web, o cuando el operador diga \"audita seguridad\", \"revisa seguridad\", \"checklist de seguridad\", \"security review\", \"busca vulnerabilidades\" o pregunte si su sitio está afectado por un CVE."
 ---
 
 # security-audit — Auditoría de seguridad pre-entrega

@@ -1,5 +1,7 @@
 # MCPs del harnés
 
+> Este documento conserva observaciones históricas de una máquina (2026-11-05), no demuestra el estado actual de ninguna instalación. El inventario portable vive en `config/mcp.json` y `config/opencode.example.json` es opt-in; el sync no cambia MCPs. Verifica y rota las claves expuestas manualmente.
+
 Estado de `~\.config\opencode\opencode.json` tras la reparación 2026-11-05.
 Cada MCP justifica su existencia con comportamiento observable; los eliminados tienen registro en `decisions.md`.
 

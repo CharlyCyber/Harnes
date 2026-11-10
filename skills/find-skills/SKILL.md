@@ -50,7 +50,7 @@ For example, top skills for web development include:
 
 ### Step 3: Search for Skills
 
-If the leaderboard doesn't cover the user's need, run the find command:
+If the leaderboard doesn't cover the user's need, request approval before running external tools. Review and pin the CLI version first; this example is not an automatic install:
 
 ```bash
 npx skills find [query] [--owner <owner>]
@@ -92,15 +92,12 @@ npx skills add vercel-labs/agent-skills@react-best-practices
 Learn more: https://skills.sh/vercel-labs/agent-skills/react-best-practices
 ```
 
-### Step 6: Offer to Install
+### Step 6: Propose adoption, never install globally
 
-If the user wants to proceed, you can install the skill for them:
-
-```bash
-npx skills add <owner/repo@skill> -g -y
-```
-
-The `-g` flag installs globally (user-level) and `-y` skips confirmation prompts.
+Show the source and request approval. Inspect the instructions, scripts, license,
+network access and dependencies; pin a reviewed commit and record provenance in
+`skills/REGISTRO.md`. Add the skill to the canon and run the harness sync. Do not
+run `npx skills add -g -y` or overwrite another manager's skills.
 
 ## Common Skill Categories
 

@@ -1,13 +1,20 @@
-# hooks/
+# Hooks y permisos
 
-Capa de enforcement (reglas que el sistema impone, no solo sugiere). Principios:
+`python hooks/check_secrets.py --repo .` escanea archivos rastreados del árbol y
+URLs de remotes; `--staged` escanea el contenido del índice, no el árbol. Emite
+solo nombres de archivo y tipo de hallazgo, nunca valores. Es heurístico: omite
+binarios, no revisa historial ni secretos ignorados, puede fallar o dar falsos
+positivos. Usa además un escáner de historial y rota cualquier credencial
+comprometida. No publica ni altera remotes.
 
-- **Éxito silencioso, fallos verbosos:** exit 0 sin ruido; fallar imprime el error accionable en el bucle.
-- Cada hook nace de un fallo real registrado en `knowledge/failures.md`.
+`python hooks/install_hook.py` instala `pre-commit` **solo en este repo**, si no
+existe otro hook ni `core.hooksPath`; no pisa configuración. Para otros proyectos,
+integra su propia herramienta de secretos y sus hooks existentes. Un pre-commit
+puede omitirse y ocurre solo al hacer commit: aplica también comprobaciones en CI.
 
-## Pendiente v0.2 (primeros hooks previstos)
-
-- `check.ps1`: gate de calidad (lint/format/test) que se dispara tras edits relevantes y commits.
-- Bloqueo de comandos destructivos (`rm -rf`, `git push --force`) sobre el canon del harnés.
-
-Un hook sin fallo real que lo justifique no se escribe; primero llega el fallo al registro de trinquete.
+Las instrucciones en Markdown no bloquean herramientas. Usa sandbox de sistema,
+aprobaciones y permisos nativos de cada cliente; prueba sus reglas antes de
+operar en datos reales. `config/opencode.example.json` es un ejemplo opcional
+con aprobación por defecto y algunos bloqueos, no se instala ni sustituye la
+configuración del usuario. Sus patrones de texto no cubren todas las variantes
+de comandos y **no son una barrera de seguridad**.

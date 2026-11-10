@@ -1,0 +1,2 @@
+# Reference validator for the Agent Skills specification; sync itself is stdlib-only.
+skills-ref==0.1.1

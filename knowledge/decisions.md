@@ -1,4 +1,12 @@
-﻿# Registro de Decisiones
+# Registro de Decisiones
+
+## 2026-11-10 — Sync conservador multiplataforma
+
+- Python estándar sustituye al motor específico de Windows; junctions/enlaces por skill apuntan al checkout, con inventario de propiedad. `--adopt` respalda colisiones y es explícito.
+- Perfil `core` reduce el catálogo global a 13; `all` conserva las 33 skills activas. `cavecrew` queda dormida hasta incorporar y probar sus tres subagentes ausentes. No se han eliminado capacidades por similitud no verificada.
+- Instrucciones por bloques y marca junto a `charli-design`. MCP y permisos son opt-in; un enlace de repo no garantiza soporte de agentes remotos ni acceso a repos privados.
+- La validación de formato usa `skills-ref`; el CI propuesto prueba tres sistemas y ambos wrappers de PowerShell. La ejecución local de esta revisión solo cubrió Linux; las credenciales, licencias pendientes y seguridad de cada cliente requieren intervención del operador.
+
 
 Formato: fecha — decisión — razón — evidencia/fuente.
 
@@ -42,7 +50,7 @@ Formato: fecha — decisión — razón — evidencia/fuente.
 - **Bootstrap de una línea (`install.ps1` + documentación en README).** Compartir el repo ya es "pegar y sincronizado": `irm https://raw.githubusercontent.com/CharlyCyber/Harnes/main/install.ps1 | iex` → clona (o actualiza con `pull --ff-only`) el canon a `Documents\Proyectos\Harnés` y ejecuta `sync\sync.ps1`. Respeto de reglas: 8 (portabilidad, destino derivado de GetFolderPath, no rutas fijas) y 9 (custodia: si el destino existe y no es este repo, aborta; si el pull diverge, aborta sin reset automático). El `irm | iex` requiere Git en PATH + credencial GitHub válida (repo privado).
 
 - **Purga server-side de Freebuff/codebuff completada — la cuenta queda con solo el harnés.** Reemplazo total vía `PUT /https://www.codebuff.com/api/v1/cloud/skills` con revision 2 → **revision 3: solo `find-skills` y `design-taste-frontend`** (32 skills viejas eliminadas server-side). Caché local alineado: dir materializado vencido borrado (ruta MAX_PATH, vía `\\?\` con Node), `current.json` reescrito con la revision 3 verificada por GET, `imported.json` reseteado a `[]`. Backup pre-purga conservado en `~/.config/freebuff-desktop/account-skills.bak-20261030`. Postmortem completo en `failures.md` (fallo key: el server es la fuente de verdad; los cachés locales resucitan si solo se borra del lado local). Nota de límites del server: `instructions ≤ 50KB`, `files[].contents ≤ 100KB`, `files ≤ 100/skill`, total ≤ 2.5MB → se excluyó del transporte `library/{sites,heroes,photos,sections}.json` (payload de 2.6MB → 1.08MB); el canon local conserva la skill completa.
-- **Regla 5 (YAGNI) retirada a petición del operador.** El canon queda en 10 reglas renumeradas; referencias cruzadas actualizadas (`failures.md`, `sync.ps1`, `decisions.md`). Nota ratchet: era la única regla de estilo sin fallo directo que la respone — su retirada es coherente con la trazabilidad. Las reglas 8 (portabilidad) y 9 (custodia de proyectos) se mantienen: son la mitigación de los dos fallos graves del postmortem del AU.
+- **Regla 5 (YAGNI) retirada a petición del operador.** El canon queda en 10 reglas renumeradas; referencias cruzadas actualizadas (`failures.md`, `sync.ps1`, `decisions.md`). Nota ratchet: era la única regla de estilo sin fallo directo que la responde — su retirada es coherente con la trazabilidad. Las reglas 8 (portabilidad) y 9 (custodia de proyectos) se mantienen: son la mitigación de los dos fallos graves del postmortem del AU.
 
 - **Config de Firecrawl y keys:** el operador aprovisionó keys (`FIRECRAWL_API_KEY`, `APIFY_TOKEN`) como env vars de usuario vía setx; config de MCPs usa placeholders `${VAR}` (regla 3). Apify validado por API (FREE, cuenta `regal_crane`) y activo. Firecrawl tiene key válida pero su red es inalcanzable por egress desde el ISP del operador (`failures.md` 2026-10-30) → MCP `enabled: false` hasta haya VPN/ruta alternativa. Descartadas las alternativas oficiales de Firecrawl (OAuth hosted, CLI, skills pack): OAuth exige navegador y el CLI/skills inflarían el catálogo contra la política anti-inflación.
 
@@ -62,7 +70,7 @@ Formato: fecha — decisión — razón — evidencia/fuente.
 
 ## 2026-10-29
 
-- **Nace el harnás "Harnés"** tras eliminar por completo el Agente Universal (repo, carpeta, copias y configs).
+- **Nace el harnés "Harnés"** tras eliminar por completo el Agente Universal (repo, carpeta, copias y configs).
   - Razón: reestructurar de cero imitando las mejores prácticas documentadas.
 - **Harnás portable multi-agente** (no monolítico en un solo IDE): el repo canónico se sincroniza a OpenCode, Claude Code, Antigravity, Freebuff, etc.
   - Evidencia: el operador usa 10+ agentes; el fallo del AU no fue el concepto de sync sino su implementación (rutas absolutas rígidas → todo se rompió al mover la carpeta).
