@@ -11,6 +11,9 @@ result = subprocess.run(
 print(result.stdout, end='')
 print(result.stderr, end='', file=sys.stderr)
 if result.returncode and os.environ.get('GITHUB_ACTIONS') == 'true':
-    message = result.stderr.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-    print('::error::' + message)
+    for section in result.stderr.split('\n' + '=' * 70):
+        if not section.strip():
+            continue
+        message = section.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print('::error::' + message)
 sys.exit(result.returncode)

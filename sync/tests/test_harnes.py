@@ -18,8 +18,8 @@ class SyncTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         base = Path(self.tmp.name)
-        self.repo = base / 'repo'
-        self.home = base / 'home'
+        self.repo = base / 'repo & proyecto'
+        self.home = base / 'home & prueba'
         (self.repo / 'sync').mkdir(parents=True)
         (self.repo / 'skills/alpha').mkdir(parents=True)
         (self.repo / 'skills/beta').mkdir(parents=True)

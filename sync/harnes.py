@@ -45,9 +45,12 @@ def make_link(path, target):
     if os.name == 'nt':
         # Junctions do not require Developer Mode or elevation on Windows.
         env = dict(os.environ, HARNES_JUNCTION_LINK=str(path), HARNES_JUNCTION_TARGET=str(target))
-        result = subprocess.run(['cmd', '/d', '/v:off', '/c',
-                                 'mklink /J "%HARNES_JUNCTION_LINK%" "%HARNES_JUNCTION_TARGET%"'],
-                                env=env, capture_output=True, text=True)
+        # On Windows, pass one command line: list2cmdline escapes embedded quotes
+        # for C programs, but cmd.exe interprets those backslashes literally.
+        # Paths are passed through quoted environment variables; Windows paths
+        # cannot contain a quote, and delayed expansion is explicitly disabled.
+        command = 'cmd.exe /d /v:off /c mklink /J "%HARNES_JUNCTION_LINK%" "%HARNES_JUNCTION_TARGET%"'
+        result = subprocess.run(command, env=env, capture_output=True, text=True)
         if result.returncode:
             raise RuntimeError(f'No se pudo crear junction {path}: {result.stderr or result.stdout}')
     else:
