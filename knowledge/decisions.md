@@ -1,9 +1,15 @@
 # Registro de Decisiones
 
+## 2026-11-10 — Retirada de `cavecrew` y controles de init
+
+- **Retirada de `cavecrew`:** solapaba parcialmente con `caveman` (salida comprimida) y delegaba en tres subagentes inexistentes; estaba dormida. No eran idénticas: `cavecrew` apuntaba a investigación/edición/revisión y `caveman` al modo de respuesta principal. Se conserva `caveman`; la retirada fue autorizada por el operador. Evidencia: comparación de sus `SKILL.md` y ausencia de los subagentes.
+- **`hyperframes init` deja de recomendarse sin control:** los módulos upstream pueden ejecutar `npx hyperframes init`, que instala o actualiza skills. Se añadió un lanzador local limitado a `hyperframes@0.9.33`, con `HYPERFRAMES_SKIP_SKILLS=1`, sin actualización ni telemetría, sin `npx` y rechazando versiones distintas. Prueba real: exit 0, proyecto generado, skills ajenas intactas. Límite: no es sandbox, no valida integridad de dependencias y no cubre otras versiones.
+- **Descubrimiento de Codex comprobado sin autenticación:** `codex app-server` con HOME aislado listó las 14 skills de `core`, `video` una vez y ningún módulo interno (además de 5 skills del propio cliente). No se invocó el modelo. Claude Code quedó **bloqueado** por falta de sesión; no se usaron credenciales.
+- **Procedencia y seguridad más honestas:** se documentan commits de HEAD de upstream, pero no se atribuye licencia a copias vendorizadas sin hash; la música de `brag` queda bloqueada. Se añadió `history_scan.py`, que revisa todos los blobs alcanzables sin imprimir valores y cuenta binarios omitidos. La protección de `main` no es verificable con la API actual (403).
 ## 2026-11-10 — Sync conservador multiplataforma
 
 - Python estándar sustituye al motor específico de Windows; junctions/enlaces por skill apuntan al checkout, con inventario de propiedad. `--adopt` respalda colisiones y es explícito.
-- Perfil `core` reduce el catálogo global a 13; `all` conserva las 33 skills activas. `cavecrew` queda dormida hasta incorporar y probar sus tres subagentes ausentes. No se han eliminado capacidades por similitud no verificada.
+- Perfil `core` reduce el catálogo global a 13; `all` conserva las 33 skills activas. `cavecrew` queda dormida hasta incorporar y probar sus tres subagentes ausentes (retirada el 2026-11-10; véase la entrada superior). No se han eliminado capacidades por similitud no verificada.
 - Instrucciones por bloques y marca junto a `charli-design`. MCP y permisos son opt-in; un enlace de repo no garantiza soporte de agentes remotos ni acceso a repos privados.
 - La validación de formato usa `skills-ref`; el CI propuesto prueba tres sistemas y ambos wrappers de PowerShell. La ejecución local de esta revisión solo cubrió Linux; las credenciales, licencias pendientes y seguridad de cada cliente requieren intervención del operador.
 

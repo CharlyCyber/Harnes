@@ -200,6 +200,54 @@ class VideoTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertFalse((root / 'bad').exists())
 
+    @unittest.skipUnless(shutil.which('node'), 'Node required for launcher test')
+    def test_hyperframes_init_guard(self):
+        wrapper = ROOT / 'skills/video/scripts/hyperframes_init.py'
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            package = base / 'package'
+            (package / 'bin').mkdir(parents=True)
+            (package / 'package.json').write_text(json.dumps({'name': 'hyperframes', 'version': '0.9.33'}))
+            (package / 'bin/hyperframes.mjs').write_text(
+                "import fs from 'node:fs'; fs.writeFileSync('calls.json', JSON.stringify({args:process.argv.slice(2),skip:process.env.HYPERFRAMES_SKIP_SKILLS,update:process.env.HYPERFRAMES_NO_UPDATE_CHECK,telemetry:process.env.HYPERFRAMES_NO_TELEMETRY}));")
+            command = [sys.executable, str(wrapper), '--package-dir', str(package), str(base / 'new-project')]
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            calls = json.loads((base / 'calls.json').read_text())
+            self.assertEqual(calls['args'], ['init', 'new-project', '--non-interactive', '--example=blank'])
+            self.assertEqual((calls['skip'], calls['update'], calls['telemetry']), ('1', '1', '1'))
+            (base / 'new-project').mkdir()
+            (base / 'calls.json').unlink()
+            self.assertNotEqual(subprocess.run(command, capture_output=True).returncode, 0)
+            self.assertFalse((base / 'calls.json').exists())
+            (package / 'package.json').write_text(json.dumps({'name': 'hyperframes', 'version': '99.0.0'}))
+            self.assertNotEqual(subprocess.run(command[:-1] + [str(base / 'other')], capture_output=True).returncode, 0)
+            self.assertFalse((base / 'calls.json').exists())
+
+    @unittest.skipUnless(os.environ.get('HARNES_TEST_HYPERFRAMES_PACKAGE'), 'optional real HyperFrames package not configured')
+    def test_real_hyperframes_init_preserves_home_skills(self):
+        wrapper = ROOT / 'skills/video/scripts/hyperframes_init.py'
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            home = base / 'home'
+            skills = home / '.agents/skills'
+            (skills / 'foreign').mkdir(parents=True)
+            (skills / 'foreign/SKILL.md').write_text('sentinel')
+            env = dict(os.environ, HOME=str(home), USERPROFILE=str(home),
+                       APPDATA=str(home / 'AppData/Roaming'), LOCALAPPDATA=str(home / 'AppData/Local'))
+            result = subprocess.run([sys.executable, str(wrapper), '--package-dir',
+                                     os.environ['HARNES_TEST_HYPERFRAMES_PACKAGE'], str(base / 'film')],
+                                    env=env, capture_output=True, text=True, timeout=90)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+            self.assertTrue((base / 'film/hyperframes.json').is_file())
+            self.assertEqual(sorted(p.name for p in skills.iterdir()), ['foreign'])
+            self.assertEqual((skills / 'foreign/SKILL.md').read_text(), 'sentinel')
+            self.assertFalse((home / '.claude/skills').exists())
+            self.assertFalse((home / '.codex/skills').exists())
+            film = base / 'film'
+            for unwanted in ('.agents', '.claude', 'skills'):
+                self.assertFalse((film / unwanted).exists())
+
     def test_migrates_owned_internal_links_but_preserves_unmanaged(self):
         with tempfile.TemporaryDirectory() as tmp:
             home = Path(tmp)
@@ -223,6 +271,39 @@ class VideoTests(unittest.TestCase):
                 if name != 'video-use':
                     self.assertFalse(h.exists(root / name), name)
             h.sync(ROOT, home, check=True)
+
+
+class HistoryScanTests(unittest.TestCase):
+    def test_reachable_history_is_scanned_without_printing_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            def git(*args):
+                return subprocess.run(['git', '-C', tmp, *args], check=True, capture_output=True)
+            git('init')
+            git('config', 'user.email', 'test@example.invalid')
+            git('config', 'user.name', 'Test')
+            secret = 'AKIA' + 'A' * 16
+            (Path(tmp) / 'old.txt').write_text('clave ' + secret)
+            (Path(tmp) / 'binary.bin').write_bytes(b'\x00' + secret.encode())
+            git('add', '.')
+            git('commit', '-m', 'first')
+            (Path(tmp) / 'old.txt').unlink()
+            git('add', '-A')
+            git('commit', '-m', 'second')
+            result = subprocess.run([sys.executable, str(ROOT / 'skills/security-audit/scripts/history_scan.py'), tmp],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            self.assertIn('AWS', result.stdout)
+            self.assertNotIn(secret, result.stdout + result.stderr)
+            self.assertIn('binarios omitidos: 1', result.stdout)
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(['git', '-C', tmp, 'init'], check=True, capture_output=True)
+            (Path(tmp) / 'safe.txt').write_text('sin credenciales')
+            subprocess.run(['git', '-C', tmp, 'add', '.'], check=True, capture_output=True)
+            subprocess.run(['git', '-C', tmp, '-c', 'user.name=T', '-c', 'user.email=t@example.invalid',
+                            'commit', '-m', 'safe'], check=True, capture_output=True)
+            result = subprocess.run([sys.executable, str(ROOT / 'skills/security-audit/scripts/history_scan.py'), tmp],
+                                    capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
 
 
 class SecretTests(unittest.TestCase):
