@@ -165,8 +165,64 @@ class RepositoryCLITests(unittest.TestCase):
                          ['verify'], ['sync', '--profile', 'core'], ['verify']):
                 result = subprocess.run(base + args, capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
+                if args == ['sync', '--profile', 'all']:
+                    for internal in json.loads((ROOT / 'sync/targets.json').read_text())['internal_skills']:
+                        self.assertFalse(h.exists(home / '.agents/skills' / internal), internal)
+                    self.assertTrue(h.exists(home / '.agents/skills/video'))
             self.assertTrue(h.same_link(home / '.agents/skills/charli-design', ROOT / 'skills/charli-design'))
-            self.assertFalse(h.exists(home / '.agents/skills/hyperframes'))
+            self.assertTrue(h.same_link(home / '.agents/skills/video', ROOT / 'skills/video'))
+            for internal in json.loads((ROOT / 'sync/targets.json').read_text())['internal_skills']:
+                self.assertFalse(h.exists(home / '.agents/skills' / internal), internal)
+            # The real skill location still exposes its sibling modules through the checkout.
+            self.assertTrue((home / '.agents/skills/video').resolve().parent.joinpath('hyperframes/SKILL.md').is_file())
+
+
+class VideoTests(unittest.TestCase):
+    def test_draw_on_is_deterministic_and_does_not_overwrite(self):
+        script = ROOT / 'skills/video/scripts/draw_on.py'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / 'input.json'
+            source.write_text(json.dumps({'width': 100, 'height': 200, 'strokes': [
+                {'color': '#ffcc00', 'points': [[0, 0], [1, 1], [1, 0]]}]}))
+            for name in ('a', 'b'):
+                result = subprocess.run([sys.executable, str(script), str(source), str(root / name), '--frames', '3', '--fps', '2'], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((root / 'a/frame_0001.svg').read_bytes(), (root / 'b/frame_0001.svg').read_bytes())
+            self.assertNotIn('<path', (root / 'a/frame_0000.svg').read_text())
+            self.assertEqual((root / 'a/frame_0002.svg').read_text().count('<path'), 2)
+            self.assertEqual(json.loads((root / 'a/manifest.json').read_text())['duration_seconds'], 1.5)
+            result = subprocess.run([sys.executable, str(script), str(source), str(root / 'a')], capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(len(list((root / 'a').glob('frame_*.svg'))), 3)
+            source.write_text(json.dumps({'strokes': [{'points': [[0, 0], [1, 1]], 'color': '<bad>'}]}))
+            result = subprocess.run([sys.executable, str(script), str(source), str(root / 'bad')], capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse((root / 'bad').exists())
+
+    def test_migrates_owned_internal_links_but_preserves_unmanaged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            cfg = json.loads((ROOT / 'sync/targets.json').read_text())
+            root = home / '.agents/skills'
+            root.mkdir(parents=True)
+            old = root / 'hyperframes'
+            h.make_link(old, ROOT / 'skills/hyperframes')
+            external = root / 'video-use'
+            external.mkdir()
+            (external / 'SKILL.md').write_text('third party')
+            state = home / '.harnes/state.json'
+            state.parent.mkdir()
+            state.write_text(json.dumps({'version': 1, 'profile': 'all', 'links': {
+                '.agents/skills/hyperframes': str((ROOT / 'skills/hyperframes').resolve())}}))
+            h.sync(ROOT, home)
+            self.assertFalse(h.exists(old))
+            self.assertEqual((external / 'SKILL.md').read_text(), 'third party')
+            self.assertTrue(h.same_link(root / 'video', ROOT / 'skills/video'))
+            for name in cfg['internal_skills']:
+                if name != 'video-use':
+                    self.assertFalse(h.exists(root / name), name)
+            h.sync(ROOT, home, check=True)
 
 
 class SecretTests(unittest.TestCase):

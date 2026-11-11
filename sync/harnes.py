@@ -142,6 +142,11 @@ def sync(repo, home, profile=None, check=False, adopt=False):
     for name, src in active.items():
         if not src.resolve().is_relative_to(skills.resolve()):
             raise ValueError(f'Skill fuera del canon: {name}')
+    internal = set(cfg.get('internal_skills', []))
+    missing_internal = internal - active.keys()
+    if missing_internal:
+        raise ValueError('Módulos internos ausentes o dormidos: ' + ', '.join(sorted(missing_internal)))
+    active = {k: v for k, v in active.items() if k not in internal}
     selected = cfg['profiles'][profile]
     if selected != 'all':
         missing = set(selected) - active.keys()
@@ -276,8 +281,14 @@ def doctor(repo, home, skip_sync=False):
             if not issues:
                 prop = read_properties(skill)
                 descriptions[skill.name] = len(prop.name) + len(prop.description)
+        internal = set(cfg.get('internal_skills', []))
+        missing = internal - {p.name for p in skills}
+        if missing:
+            errors.append('Módulos internos ausentes o dormidos: ' + ', '.join(sorted(missing)))
         for profile, names in cfg['profiles'].items():
-            names = descriptions if names == 'all' else names
+            if names != 'all' and internal.intersection(names):
+                errors.append(f'Perfil {profile} expone módulos internos: ' + ', '.join(sorted(internal.intersection(names))))
+            names = set(descriptions) - internal if names == 'all' else names
             size = sum(descriptions.get(name, 0) for name in names)
             if size > 8000:
                 print(f'AVISO: perfil {profile}: {size} caracteres en nombres y descripciones; algunos clientes pueden truncar el catálogo.')
@@ -306,7 +317,7 @@ def doctor(repo, home, skip_sync=False):
         errors.append(str(exc))
     if errors:
         raise RuntimeError('\n'.join(errors))
-    print(f'Doctor: {len(skills)} skills activas válidas; sin errores detectados.')
+    print(f'Doctor: {len(skills)} entradas del canon válidas (incluidos módulos internos); sin errores detectados.')
 
 
 def main():
