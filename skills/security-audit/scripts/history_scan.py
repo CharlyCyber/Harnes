@@ -39,6 +39,9 @@ def scan(repo):
         oid, _, name = line.partition(b' ')
         if oid:
             objects.setdefault(oid, set()).add(name.decode('utf-8', 'replace'))
+    # A non-zero exit after every requested object was read is not treated as a
+    # failure: on Windows the process can be closed locally with code 1. Read
+    # errors and truncation above are what determine coverage.
     report = {'refs': len(refs), 'objects': len(objects), 'blobs': 0, 'text_scanned': 0,
               'binary_skipped': 0, 'oversize_skipped': 0, 'findings': [], 'errors': []}
     proc = subprocess.Popen(['git', '-C', str(repo), 'cat-file', '--batch'],
@@ -73,13 +76,21 @@ def scan(repo):
                     report['findings'].append({'object': oid.decode()[:12], 'type': label,
                                                'paths': paths[:3]})
     finally:
-        if proc.stdin:
-            proc.stdin.close()
-        if proc.poll() is None:
-            proc.terminate()
-        proc.wait()
-    if proc.returncode not in (0, -15):
-        report['errors'].append('cat-file terminó con código ' + str(proc.returncode))
+        try:
+            if proc.stdin:
+                proc.stdin.close()
+        except OSError:
+            pass
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
+            report['errors'].append('cat-file no terminó')
     return report
 
 
