@@ -23,8 +23,8 @@ Conserva el proyecto existente y haz cambios mínimos en encargos puntuales. En 
 | Caso | Acción y módulos bajo demanda (rutas relativas a `CANON`) |
 |---|---|
 | Analizar un vídeo sin editarlo | `analizar-videos/SKILL.md` o `video-use/references/analyze.md`; comprueba dependencias y permisos antes de descargar o transcribir. |
-| Edición de metraje existente, reel, entrevista, montaje cinematográfico | Lee `references/editing.md`; para detalles consulta `video-use/SKILL.md`. Usa FFmpeg si está disponible o la herramienta existente del proyecto. Transcripción no es obligatoria, especialmente para piezas sin voz. |
-| Motion graphics, títulos, explainer, promo, animación o composición HTML | Lee `references/motion.md`, luego `hyperframes/SKILL.md`, `hyperframes-core/SKILL.md` y, según necesidad, `hyperframes-animation/SKILL.md`, `hyperframes-creative/SKILL.md`, `hyperframes-keyframes/SKILL.md` y `general-video/SKILL.md`. |
+| Edición de metraje existente, reel, entrevista, montaje cinematográfico | Lee `video/references/editing.md`; para detalles consulta `video-use/SKILL.md`. Usa FFmpeg si está disponible o la herramienta existente del proyecto. Transcripción no es obligatoria, especialmente para piezas sin voz. |
+| Motion graphics, títulos, explainer, promo, animación o composición HTML | Lee `video/references/motion.md`, luego `hyperframes/SKILL.md`, `hyperframes-core/SKILL.md` y, según necesidad, `hyperframes-animation/SKILL.md`, `hyperframes-creative/SKILL.md`, `hyperframes-keyframes/SKILL.md` y `general-video/SKILL.md`. |
 | Promo de app o web | Usa la ruta de motion; `brag/SKILL.md` es inspiración opcional, no licencia para añadir música ni publicar. No reutilices su audio sin verificar derechos. |
 | Proyecto HyperFrames existente o conversión Remotion explícita | Conserva el stack del proyecto; consulta `hyperframes/SKILL.md`, `hyperframes-cli/SKILL.md` y, para port, `remotion-to-hyperframes/SKILL.md`. |
 | Voz, música, efectos, captions o LUT | `hyperframes-audio/SKILL.md` y `media-use/SKILL.md` solo si hacen falta. Recursos y servicios no se presumen disponibles o licenciados. |

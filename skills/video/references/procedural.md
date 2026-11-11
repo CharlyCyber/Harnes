@@ -12,7 +12,7 @@ Ejemplo de entrada `strokes.json` en el proyecto (coordenadas de 0 a 1):
 ```
 
 ```sh
-python "<VIDEO_DIR>/scripts/draw_on.py" strokes.json ./draw-frames --frames 60 --fps 30
+python3 "<VIDEO_DIR>/scripts/draw_on.py" strokes.json ./draw-frames --frames 60 --fps 30
 ```
 
-El destino debe ser nuevo; se producen `frame_0000.svg` en adelante y un `manifest.json` con FPS y duración. El primer frame está vacío y el último contiene todos los trazos. Importa los frames con duración de `1/fps` cada uno en el editor o conviértelos con una herramienta disponible; el script no crea GIF ni MP4. Comprueba compatibilidad SVG, alpha, sincronización y rendimiento en el flujo real antes de usarlo. Si necesitas otro estilo, decide si conviene una ilustración manual o evaluar Claude Drawing por separado, con sus dependencias y licencia.
+En Windows usa `py -3` si `python3` no está disponible. El destino debe ser nuevo; se producen `frame_0000.svg` en adelante y un `manifest.json` con FPS y duración. El primer frame está vacío y el último contiene todos los trazos. Importa los frames con duración de `1/fps` cada uno en el editor o conviértelos con una herramienta disponible; el script no crea GIF ni MP4. Comprueba compatibilidad SVG, alpha, sincronización y rendimiento en el flujo real antes de usarlo. Si necesitas otro estilo, decide si conviene una ilustración manual o evaluar Claude Drawing por separado, con sus dependencias y licencia.
