@@ -42,7 +42,7 @@ manual, previa revisión. El respaldo de una junction antigua sigue siendo un
 
 ## Skills y perfiles
 
-- Por defecto, `core` activa 14 skills, incluida `video`, la entrada única para vídeo. `python sync/harnes.py sync --profile all` activa 19 skills públicas; para volver, usa `--profile core`. Los módulos internos de vídeo se cargan bajo demanda desde el checkout, no se registran como skills independientes.
+- Por defecto, `core` activa 14 skills, incluida `video`, la entrada única para vídeo; el protocolo A/B de cuatro tareas está en [knowledge/video-evaluation.md](knowledge/video-evaluation.md). `python sync/harnes.py sync --profile all` activa 19 skills públicas; para volver, usa `--profile core`. Los módulos internos de vídeo se cargan bajo demanda desde el checkout, no se registran como skills independientes.
 - Los enlaces por skill apuntan directamente al checkout. No hay copia física
   duplicada gestionada por el harnés. Las skills de otros gestores se conservan.
 - `~/.agents/skills` es la ruta interoperable para clientes que la soportan;
@@ -54,9 +54,10 @@ manual, previa revisión. El respaldo de una junction antigua sigue siendo un
 - Cambiar archivos a través de un enlace **modifica el canon**. Trátalos como
   solo lectura durante el trabajo normal. Los enlaces no son una frontera de
   seguridad. No dejes que otros gestores sin revisar administren esos destinos.
-- `cavecrew` está dormida porque faltan sus tres subagentes. Las skills no se
-  borraron por parecer parecidas: cada stack puede tener responsabilidades y
-  dependencias distintas. Su procedencia y límites están en `skills/REGISTRO.md`.
+- `cavecrew` se retiró por su solapamiento parcial con `caveman` y por faltar
+  sus tres subagentes; sus funciones no eran idénticas. La procedencia y límites
+  del catálogo están en `skills/REGISTRO.md`, y la evidencia por cliente en
+  [knowledge/compatibility.md](knowledge/compatibility.md).
 
 Las instrucciones se actualizan dentro de un bloque delimitado en archivos
 compatibles, preservando el contenido externo. No se cambia ninguna configuración
@@ -73,11 +74,18 @@ python hooks/install_hook.py              # opcional, solo para este repo
 ```
 
 El hook examina lo preparado para commit y los remotes; no sustituye un gestor
-de secretos ni una auditoría del historial. Véase [hooks/README.md](hooks/README.md).
+de secretos ni una auditoría del historial. Para revisar todos los blobs
+alcanzables sin imprimir valores: `python skills/security-audit/scripts/history_scan.py .`
+Véanse [hooks/README.md](hooks/README.md) y [SECURITY.md](SECURITY.md).
 Las credenciales que hayan estado expuestas deben rotarse manualmente; no se
 puede demostrar su revocación desde este repo. Configura sandbox y aprobaciones
 nativas de cada cliente antes de dar autonomía: las reglas de texto y filtros
 por patrón no son barreras de seguridad.
+
+La inicialización de HyperFrames no se ejecuta con `npx`: usa el lanzador limitado
+que se describe en `skills/video/references/hyperframes-init.md`, después de revisar
+y autorizar la instalación local. La matriz de lo realmente probado, con sus
+límites, está en [knowledge/compatibility.md](knowledge/compatibility.md).
 
 `config/mcp.json` inventaría servidores opcionales y versiones; el ejemplo de
 OpenCode debe revisarse y fusionarse manualmente. `knowledge/mcps.md` documenta

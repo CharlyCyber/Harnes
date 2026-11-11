@@ -24,7 +24,7 @@ description: "Auditoría de seguridad read-only de webs y apps (incluidas las vi
 
 1. **Alcance** → confirmar ruta, si es código propio y dónde van los informes (por defecto, temp del sistema, fuera del proyecto).
 2. **Escaneo** → `nfaudit scan` offline.
-3. **Checklist 19 puntos** → `audit.py` (incluye historial de git, que el escáner no cubre).
+3. **Checklist 19 puntos** → `audit.py`; para el historial completo alcanzable, `scripts/history_scan.py` (no imprime valores; cuenta binarios omitidos, que no equivalen a limpios).
 4. **Triage y revisión manual** → separar confirmed / needs-review / preventive y leer el código de los puntos P1, P5 y P12–P19.
 5. **Informe y arreglos** → informe con los 19 puntos + secciones por estado; arreglos solo con aprobación, y re-escanear después.
 
@@ -58,7 +58,7 @@ python skills/security-audit/scripts/audit.py RUTA_PROYECTO [--url https://sitio
 |---|---|
 | P3 .env en git | `git ls-files` busca `.env*` trackeados (`.env.example` y similares permitidos) |
 | P4 claves hardcodeadas | Regex sobre el árbol actual (OpenAI, GitHub, AWS, Google, Slack, private keys, JWT) |
-| P5 claves filtradas | Mismos patrones sobre el historial (`git log -p`, últimos 100 commits) |
+| P5 claves filtradas | Patrones sobre el historial (`git log -p`, últimos 100 commits). No es todo el historial: usa `history_scan.py` para todos los blobs alcanzables y revisa sus omisiones. |
 | P6 secretos en logs | `console.log`/`print`/`logger` con token/password/secret/authorization |
 | P8 debug en prod | `DEBUG = True` en Python, source maps (`dist/**.map`) trackeados |
 | P9 rutas de prueba | Definiciones de rutas `/test`, `/debug`, `/dev` en frameworks |
@@ -69,6 +69,14 @@ python skills/security-audit/scripts/audit.py RUTA_PROYECTO [--url https://sitio
 | Extra | `npm audit` (vulnerabilidades high/critical) si hay `package.json` |
 
 Resultado por hallazgo: `[PASS]` `[FAIL]` `[WARN]` `[INFO]` `[SKIP]` con el número de punto. `SKIP` = no aplica (sin git, sin npm, sin `--url`).
+
+Para el historial completo, incluidos blobs sin ruta en el commit actual:
+
+```sh
+python skills/security-audit/scripts/history_scan.py RUTA_REPO
+```
+
+Recorre todos los refs y objetos alcanzables con `git cat-file --batch`; limita el tamaño, omite binarios y falla con código 2 si hay errores o truncamiento. Un resultado sin hallazgos **no** cubre objetos inalcanzables, contenido cifrado/comprimido, binarios ni credenciales con formatos no reconocidos. No reescribe ni publica el historial. Si hay un hallazgo, no copies el valor al informe, restringe el acceso y coordina la rotación en el proveedor correspondiente; borrar el archivo no invalida la credencial.
 
 **Nota P4/P7:** la anon key de Supabase (`eyJ…` con `role: anon`) es pública por diseño → `INFO`, no FAIL. La `service_role` sí es FAIL. Si aparece cualquier clave filtrada (P5), la remediación **incluye rotación**: borrarla del repo no basta.
 

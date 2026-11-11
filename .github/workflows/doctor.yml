@@ -18,12 +18,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.11'
       - run: python -m pip install -r sync/requirements.txt
       - run: python sync/tests/run_ci.py
       - run: python sync/harnes.py doctor --skip-sync
+      - name: Historial alcanzable sin imprimir secretos
+        if: runner.os == 'Linux'
+        run: python skills/security-audit/scripts/history_scan.py .
       - run: python -c "import ast,pathlib; files=list(pathlib.Path('skills').rglob('*.py')); [ast.parse(p.read_text(encoding='utf-8-sig'), str(p)) for p in files]; print(len(files), 'Python scripts OK')"
       - name: PowerShell 5.1 wrapper
         if: runner.os == 'Windows'

@@ -53,6 +53,18 @@ cliente real. Algunos productos solo aceptan configuraciones remotas o no pueden
 seguir enlaces: necesitan un adaptador distinto, no una promesa de soporte.
 No se instala ni modifica el servidor de Codebuff/Freebuff.
 
+## Pruebas con clientes reales
+
+`python sync/tests/probe_codex.py --codex /ruta/a/codex` crea HOME y proyecto
+temporales, sincroniza y consulta el catálogo por `app-server`; no inicia sesión
+ni invoca el modelo. Verifica que `video` aparece una vez y que los módulos
+internos no se exponen. Claude y otros clientes requieren una sesión del
+operador y no se prueban con credenciales del repo.
+
+El test opcional de HyperFrames (`test_real_hyperframes_init_preserves_home_skills`)
+se ejecuta solo si `HARNES_TEST_HYPERFRAMES_PACKAGE` apunta a un paquete local ya
+revisado. No descarga nada y no forma parte del CI.
+
 ## Video unificado y migración
 
 `video` está en `core` y `all`; `internal_skills` enumera módulos del canon que
