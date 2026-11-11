@@ -6,3 +6,5 @@
 - No destruyas trabajo ajeno ni ejecutes acciones irreversibles sin autorización. Confirma antes de publicar o modificar recursos remotos.
 - Antes de declarar terminado un cambio, ejecuta las comprobaciones pertinentes e informa de los resultados y de lo que no se pudo verificar.
 - Sigue las instrucciones específicas del proyecto y no hagas commit ni push sin autorización.
+
+- Para cualquier solicitud de creación, edición, motion o análisis de vídeo, usa `video` como entrada única; carga sus módulos internos solo bajo demanda.

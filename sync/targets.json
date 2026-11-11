@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "universal": {
     "skills": "~/.agents/skills"
   },
@@ -78,7 +78,8 @@
       "security-audit",
       "ship",
       "triage",
-      "web-animation"
+      "web-animation",
+      "video"
     ],
     "all": "all"
   },
@@ -86,5 +87,22 @@
     "~/.gemini/skills",
     "~/.codex/skills",
     "~/.config/opencode/skills"
+  ],
+  "internal_skills": [
+    "hyperframes",
+    "hyperframes-core",
+    "hyperframes-cli",
+    "hyperframes-animation",
+    "hyperframes-audio",
+    "hyperframes-creative",
+    "hyperframes-keyframes",
+    "hyperframes-registry",
+    "hyperframes-studio",
+    "media-use",
+    "general-video",
+    "remotion-to-hyperframes",
+    "video-use",
+    "analizar-videos",
+    "brag"
   ]
 }

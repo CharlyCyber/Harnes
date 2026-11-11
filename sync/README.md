@@ -52,3 +52,13 @@ cuando el cliente las cargue realmente. Prueba con HOME desechable y con el
 cliente real. Algunos productos solo aceptan configuraciones remotas o no pueden
 seguir enlaces: necesitan un adaptador distinto, no una promesa de soporte.
 No se instala ni modifica el servidor de Codebuff/Freebuff.
+
+## Video unificado y migración
+
+`video` está en `core` y `all`; `internal_skills` enumera módulos del canon que
+se consultan desde ella, pero no se enlazan como skills públicas. En el siguiente
+`sync` se retiran solo los enlaces anteriores inventariados que aún apuntan a sus
+destinos originales. Copias y enlaces de terceros se conservan y pueden competir;
+revísalos manualmente. El checkout debe seguir accesible y el cliente debe poder
+leer referencias fuera del directorio de la skill a través de la ruta real resuelta;
+clientes que lo impidan necesitan otro adaptador. Reinicia el agente.

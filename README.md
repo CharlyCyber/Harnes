@@ -42,7 +42,7 @@ manual, previa revisión. El respaldo de una junction antigua sigue siendo un
 
 ## Skills y perfiles
 
-- Por defecto, `core` activa 13 skills generales. Para vídeo y el resto: `python sync/harnes.py sync --profile all` (33 activas). Para volver: `--profile core`.
+- Por defecto, `core` activa 14 skills, incluida `video`, la entrada única para vídeo. `python sync/harnes.py sync --profile all` activa 19 skills públicas; para volver, usa `--profile core`. Los módulos internos de vídeo se cargan bajo demanda desde el checkout, no se registran como skills independientes.
 - Los enlaces por skill apuntan directamente al checkout. No hay copia física
   duplicada gestionada por el harnés. Las skills de otros gestores se conservan.
 - `~/.agents/skills` es la ruta interoperable para clientes que la soportan;

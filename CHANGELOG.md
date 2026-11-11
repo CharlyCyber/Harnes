@@ -2,6 +2,10 @@
 
 ## Sin publicar
 
+- `video` como entrada única de vídeo en core y all: módulos internos bajo demanda,
+  referencias de motion y edición, y generador opcional de trazos SVG locales.
+  Migración conservadora de enlaces antiguos; fuentes y licencias documentadas.
+
 - Sincronización multiplataforma con enlaces por skill, perfiles y protección del
   contenido ajeno; migración optativa con respaldos e inventario de propiedad.
 - Instrucciones globales separadas de la guía de este repo y fusionadas por bloque.

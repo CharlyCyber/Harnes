@@ -1,6 +1,6 @@
 # Registro del Catálogo
 
-Estado: **33 skills activas** y `cavecrew` dormida por dependencias ausentes. El perfil `core` activa 13; `all`, las 33. No se han eliminado skills por un supuesto solapamiento sin medir. Parte de la procedencia y licencias sigue pendiente de verificar.
+Estado: **19 skills públicas** y 15 módulos internos de vídeo; `cavecrew` dormida por dependencias ausentes. `core` activa 14; `all`, 19. Los módulos internos se conservan en el canon sin enlazarse como skills públicas. Parte de la procedencia y licencias sigue pendiente de verificar.
 
 ## Adopciones propias
 
@@ -9,13 +9,25 @@ Estado: **33 skills activas** y `cavecrew` dormida por dependencias ausentes. El
 | `charli-design` | Fusión propia (2026-10-31): taste-skill (Leonxlnx @ `12af471f`) + Impeccable (pbakaus, derivado vendored) | MIT (LICENSE-upstream de taste) | Núcleo anti-slop: dirección de arte, bibliotecas de paletas/tipo, leyes de pulido (tipografía, OKLCH, motion físico) y verificación en navegador. |
 | `find-skills` | vercel-labs/skills @ `92a9a34a` | MIT | Descubrir/instalar skills del ecosistema a demanda sin inflar el catálogo. |
 
-## Stack HyperFrames (12)
+## Video unificado (2026-11-10)
+
+`video` es la entrada única en ambos perfiles. Enruta edición, reels, análisis y
+motion; consulta bajo demanda los 12 módulos HyperFrames, `video-use`,
+`analizar-videos` y `brag` como referencias internas. Ninguno se expone por
+separado mediante sync. La integración incorpora principios seleccionados de
+Bang Motion y Huashu y un pequeño generador local de SVG inspirado por la idea
+procedimental de Claude Drawing; no incluye los repos completos ni sus assets.
+Commits, alcance y licencias: `video/references/provenance.md`. El router limita
+instalaciones, actualización automática, servicios externos y marca de agua.
+Se requiere verificar en cada proyecto las herramientas, derechos y resultados.
+
+## Stack HyperFrames — módulos internos (12)
 
 Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heygen-com/hyperframes`, plugin `core-skills`. Versiones registradas entre 2026-09-29 y 2026-10-05.
 
 | Skill | Rol |
 |---|---|
-| `hyperframes` | Router obligatorio de cualquier tarea de vídeo |
+| `hyperframes` | Router upstream consultado para composiciones HyperFrames; `video` tiene prioridad |
 | `hyperframes-core` | Contrato de composición HTML + timing |
 | `hyperframes-cli` | init / check / preview / render / publish |
 | `hyperframes-animation` | Motion atómico, blueprints, runtimes |
