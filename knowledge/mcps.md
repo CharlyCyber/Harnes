@@ -9,7 +9,7 @@ Cada MCP justifica su existencia con comportamiento observable; los eliminados t
 
 | MCP | Qué entrega | Necesita | Arranque medido | Estado |
 |---|---|---|---|---|
-| `chrome-devtools` | DevTools real: consola, red, performance, screenshots, interacción (29 tools en v1.6.0). Herramienta primaria de inspección web del loop anti-slop de `charli-design`. | Nada (lanza Chrome local) | 1.3 s | ✅ operativo |
+| `chrome-devtools` | DevTools real: consola, red, performance, screenshots, interacción (29 tools en v1.6.0). Herramienta primaria de inspección web del loop anti-slop de `web` (módulo `design/`). | Nada (lanza Chrome local) | 1.3 s | ✅ operativo |
 | `context7` | Documentación fresca y versionada de librerías, directo de la fuente. | Key opcional (free tier funcional, verificado sin key) | 3.7 s | ✅ operativo |
 | `apify` | Actores de scraping a demanda (plataformas con login, paginación pesada, redes). | `APIFY_TOKEN` (env user, cuenta `regal_crane`, plan FREE) | 8.9 s | ✅ operativo |
 | `firecrawl` | Crawling/scraping estructurado de sitios (research, competidores). | `FIRECRAWL_API_KEY` (env user, key presente) | — | ⛔ `enabled: false` — egress bloqueado hacia `*.firecrawl.dev` (ver `failures.md`). Reactivar con `enabled: true` + reiniciar cuando haya VPN o cambie la red. |

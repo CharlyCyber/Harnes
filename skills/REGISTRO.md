@@ -1,12 +1,12 @@
 # Registro del Catálogo
 
-Estado: **19 skills públicas** y 15 módulos internos de vídeo. `core` activa 14; `all`, 19. Los módulos internos se conservan en el canon sin enlazarse como skills públicas. Parte de la procedencia y licencias sigue pendiente de verificar.
+Estado: **16 skills públicas**; `core` activa 12, `all`, 16. Los módulos internos se conservan en el canon sin enlazarse como skills públicas: 15 de vídeo y 4 de web (`charli-design`, `web-animation`, `3d-web-designer`, `scroll-film-studio`). Parte de la procedencia y licencias sigue pendiente de verificar.
 
 ## Adopciones propias
 
 | Skill | Fuente / commit | Licencia | Comportamiento justificado |
 |---|---|---|---|
-| `charli-design` | Fusión propia (2026-10-31): taste-skill (Leonxlnx @ `12af471f`) + Impeccable (pbakaus, derivado vendored) | MIT de taste (`LICENSE-upstream`); el upstream actual de Impeccable declara Apache-2.0, pero no se verificó la versión exacta vendorizada | Núcleo anti-slop: dirección de arte, bibliotecas de paletas/tipo, leyes de pulido (tipografía, OKLCH, motion físico) y verificación en navegador. |
+| `charli-design` (módulo `design/` de `web`) | Fusión propia (2026-10-31): taste-skill (Leonxlnx @ `12af471f`) + Impeccable (pbakaus, derivado vendored) | MIT de taste (`LICENSE-upstream`); el upstream actual de Impeccable declara Apache-2.0, pero no se verificó la versión exacta vendorizada | Núcleo anti-slop: dirección de arte, bibliotecas de paletas/tipo, leyes de pulido (tipografía, OKLCH, motion físico) y verificación en navegador. |
 | `find-skills` | vercel-labs/skills @ `92a9a34a` | MIT | Descubrir/instalar skills del ecosistema a demanda sin inflar el catálogo. |
 
 ## Video unificado (2026-11-10)
@@ -20,6 +20,33 @@ procedimental de Claude Drawing; no incluye los repos completos ni sus assets.
 Commits, alcance y licencias: `video/references/provenance.md`. El router limita
 instalaciones, actualización automática, servicios externos y marca de agua.
 Se requiere verificar en cada proyecto las herramientas, derechos y resultados.
+
+## Video unificado — ampliación (2026-11-15)
+
+Se mantiene `video` como única skill de vídeo (14 en `core`; entrada única). Se
+añaden cuatro referencias compactas bajo demanda: `beat-sync.md` (método de
+cortar al ritmo adaptado de `video-shotcraft` @ `6700db2b`, Apache-2.0),
+`sfx-sourcing.md` (especificación de cues y aprovisionamiento externo con
+licencia CC0/BY; sin código vendorizado), `preflight-test.md` (test previo:
+brief + entorno + render probe) y `lemo-opuscar.md` (puntero externo, sin
+copiar docs CC BY-NC). `motion.md` gana una nota 3D/WebGL (adapter three del
+canon; three.js MIT v0.187.0 no vendorizado; R3F descartado por alcance).
+Ningún servicio, dependencia ni audio nuevo se instala; nada se registró como
+skill pública. Procedencia y licencias: `video/references/provenance.md`.
+
+## Web unificada (2026-11-15)
+
+`web` es la entrada única en `core` y `all` para diseño y desarrollo web.
+**No mueve directorios**: `charli-design`, `web-animation`, `3d-web-designer`
+y `scroll-film-studio` pasan a ser módulos internos del canon (como los de
+vídeo) y se enlazan solo vía el router `web`. Añade `web/references/preflight-test.md`
+(test previo web: tipo/estilo, stack, marca, a11y, performance, probe).
+`web-animation` incorpora `references/platform/`: 16 guías verbatim de Modern
+Web Guidance (Google Chrome, Apache-2.0, `GoogleChrome/modern-web-guidance` @
+`4dd9683`, corpus `modern-web-guidance@1.0.0`) de motion nativo Baseline; el
+resto del corpus no está incluido ni se consulta sin autorización. Provenance:
+`web/references/provenance.md`. `chrome-devtools-mcp` y `context7` se mantienen
+fuera de la fusión (MCP/transversal, no conocimiento de construcción).
 
 ## Stack HyperFrames — módulos internos (12)
 
@@ -40,10 +67,11 @@ Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heyg
 | `general-video` | Composiciones libres y montajes |
 | `remotion-to-hyperframes` | Port de Remotion (solo ese caso) |
 
-## Herramientas con upstream declarado (4)
+## Herramientas con upstream declarado (5)
 
 | Skill | Fuente | Licencia |
 |---|---|---|
+| `web-animation` (`references/platform/`) | GoogleChrome/modern-web-guidance @ `4dd96834` | Apache-2.0 (`web-animation/references/platform/LICENSE-modern-web-guidance.txt`); 16 guías vendorizadas verbatim 2026-11-15; solo motion/scroll/transitions |
 | `brag` | latent-spaces/brag @ `fd7de7e4` | MIT para código (`LICENSE.upstream`). **Música sin licencia verificada: no usar ni redistribuir `assets/music` ni los cues** hasta documentar términos; se conservan por decisión del operador |
 | `last30days` | mvanhorn/last30days-skill; metadatos de HEAD `c58041cc` (2026-11-10) | MIT según metadatos actuales; la copia vendorizada no tiene hash ni commit de origen verificado |
 | `reverse-engineer-anything` | morluto/rea; metadatos de HEAD `a2aea3f4` (2026-11-10) | MIT según metadatos actuales; la copia vendorizada no tiene hash ni commit de origen verificado |
@@ -53,7 +81,7 @@ Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heyg
 
 ## Stack base heredado (15; cavecrew retirada)
 
-Sin upstream verificado todavía; provienen del stack anterior y se conservan por uso real. **Antes de modificar una, registrar su fuente.**
+Sin upstream verificado todavía; provienen del stack anterior y se conservan por uso real. **Antes de modificar una, registrar su fuente.** Las entradas `3d-web-designer`, `scroll-film-studio` y `web-animation` se conservan como módulos internos de `web` (ver "Web unificada"); siguen sin upstream verificado.
 
 `3d-web-designer`, `advanced-scraping`, `analizar-videos`, `caveman`, `chrome-devtools-mcp`, `context7`, `git-advanced-workflows`, `github-integration`, `mobile-design`, `no-mistakes`, `scroll-film-studio`, `ship`, `triage`, `video-use`, `web-animation`.
 

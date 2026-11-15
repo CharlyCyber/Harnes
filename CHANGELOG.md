@@ -2,6 +2,12 @@
 
 ## Sin publicar
 
+- `web` como entrada única de diseño/desarrollo web: consolida `charli-design`,
+  `web-animation`, `3d-web-designer` y `scroll-film-studio` como módulos
+  internos bajo demanda (sin mover directorios); test previo web (tipo/estilo,
+  stack, marca, a11y, performance, probe) y guías nativas Baseline vendorizadas
+  de Modern Web Guidance de Google Chrome (Apache-2.0,
+  `web-animation/references/platform/`). `core` pasa a 12 skills; `all`, 16.
 - `cavecrew` retirada: solapaba parcialmente con `caveman` y carecía de sus tres
   subagentes; `caveman` se conserva y la diferencia queda documentada.
 - Init de HyperFrames limitado a un lanzador local verificado para `0.9.33`, sin
