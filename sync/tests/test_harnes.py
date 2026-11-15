@@ -169,7 +169,7 @@ class RepositoryCLITests(unittest.TestCase):
                     for internal in json.loads((ROOT / 'sync/targets.json').read_text())['internal_skills']:
                         self.assertFalse(h.exists(home / '.agents/skills' / internal), internal)
                     self.assertTrue(h.exists(home / '.agents/skills/video'))
-            self.assertTrue(h.same_link(home / '.agents/skills/charli-design', ROOT / 'skills/charli-design'))
+            self.assertTrue(h.same_link(home / '.agents/skills/web', ROOT / 'skills/web'))
             self.assertTrue(h.same_link(home / '.agents/skills/video', ROOT / 'skills/video'))
             for internal in json.loads((ROOT / 'sync/targets.json').read_text())['internal_skills']:
                 self.assertFalse(h.exists(home / '.agents/skills' / internal), internal)

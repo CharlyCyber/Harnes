@@ -22,6 +22,10 @@ Skill unificada para animación web. Cubre **Framer Motion** (React/Next.js, dec
 
 **CRITICAL:** No mezclar GSAP y Framer Motion en el mismo árbol de componentes. Usar Framer para UI/interacciones. GSAP para scrolltelling o backgrounds aislados con cleanup en useEffect.
 
+### Nativa (Baseline) vs librería
+
+Antes de instalar o importar una librería, comprueba si el patrón ya es plataforma (`references/platform/`, vendorizado desde Modern Web Guidance de Google Chrome, Apache-2.0): scroll-driven animations, scrollytelling y View Transitions nativas no requieren JS ni dependencias. Regla: **nativa primero** si el proyecto no pide librería y su política de soporte lo permite (Baseline Widely available por defecto; fallbacks según cada guía); librería cuando hace falta orquestación compleja (timelines, springs físicos, split-text, pin horizontal). Nunca mezcles nativa y librería sobre el mismo elemento. Si el proyecto tiene Electron/Tauri/WebView o una política de browsers propia, respétala antes de elegir.
+
 ---
 
 ## Framer Motion
@@ -174,3 +178,9 @@ function Component() {
 - **Layout transitions**: usar `layout`/`layoutId` (FM) o `Flip` (GSAP) para transiciones suaves entre estados.
 - **Scroll-triggered reveals**: `whileInView` (FM) o `ScrollTrigger` (GSAP) para entradas por scroll.
 - **Reduced motion**: respetar `prefers-reduced-motion`. Usar `gsap.matchMedia()` o CSS media query.
+
+---
+
+## Plataforma nativa (vendorizado)
+
+`references/platform/` incluye 16 guías **sin modificar** de Modern Web Guidance (Google Chrome, Apache-2.0, v1.0.0 @ `4dd9683`): scroll-driven entry/exit, scrollytelling, parallax, scroll-snap, indicadores/progreso de scroll, sticky headers, scrollspy, View Transitions (same y cross-document) y directional navigation, y tamaños intrínsecos animables / propiedades individuales de transform. Qué falta (accesibilidad, CSS general, forms, performance, security, PWA) y cómo consultarlo —y cómo actualizar el corpus— están en `references/platform/README.md`. No edites los textos in situ; si una guía queda obsoleta, sustitúyela completa.

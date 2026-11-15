@@ -66,9 +66,7 @@
   ],
   "profiles": {
     "core": [
-      "3d-web-designer",
       "advanced-scraping",
-      "charli-design",
       "chrome-devtools-mcp",
       "context7",
       "find-skills",
@@ -78,8 +76,8 @@
       "security-audit",
       "ship",
       "triage",
-      "web-animation",
-      "video"
+      "video",
+      "web"
     ],
     "all": "all"
   },
@@ -89,20 +87,24 @@
     "~/.config/opencode/skills"
   ],
   "internal_skills": [
+    "3d-web-designer",
+    "analizar-videos",
+    "brag",
+    "charli-design",
+    "general-video",
     "hyperframes",
-    "hyperframes-core",
-    "hyperframes-cli",
     "hyperframes-animation",
     "hyperframes-audio",
+    "hyperframes-cli",
+    "hyperframes-core",
     "hyperframes-creative",
     "hyperframes-keyframes",
     "hyperframes-registry",
     "hyperframes-studio",
     "media-use",
-    "general-video",
     "remotion-to-hyperframes",
+    "scroll-film-studio",
     "video-use",
-    "analizar-videos",
-    "brag"
+    "web-animation"
   ]
 }
