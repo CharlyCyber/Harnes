@@ -14,6 +14,12 @@ Cada MCP justifica su existencia con comportamiento observable; los eliminados t
 | `apify` | Actores de scraping a demanda (plataformas con login, paginación pesada, redes). | `APIFY_TOKEN` (env user, cuenta `regal_crane`, plan FREE) | 8.9 s | ✅ operativo |
 | `firecrawl` | Crawling/scraping estructurado de sitios (research, competidores). | `FIRECRAWL_API_KEY` (env user, key presente) | — | ⛔ `enabled: false` — egress bloqueado hacia `*.firecrawl.dev` (ver `failures.md`). Reactivar con `enabled: true` + reiniciar cuando haya VPN o cambie la red. |
 
+## Candidatos y opcionales (no verificados)
+
+| MCP | Qué entrega | Necesita | Estado |
+|---|---|---|---|
+| `craft-anything` | Estudio y **reconstrucción** de targets (webs/apps/juegos) con bucle Study→Build→Check; 320 tools CLI+MCP (`craft-anything-cli mcp`); clean-room por defecto; Deep solo con autorización. Alternativa opt-in a REA cuando se quiere rebuild+check, no solo evidencia. | App/CLI instalada (release de GitHub o `cargo install --path apps/craft-anything-cli`, Rust 1.97+); agente de código con sesión (Claude Code primero; Codex/Copilot/Grok sin verificar en instalación real); engines que descarga en runtime | ⚠️ **early alpha**, no instalado ni verificado por este canon (2026-11-15). En `config/mcp.json` como opcional; `craft-anything-cli setup` escribiría la config del agente — solo con autorización explícita. No pasa a "operativo" hasta medir arranque y comportamiento en la máquina del usuario. Puntero de uso: `skills/reverse-engineer-anything/SKILL.md`. |
+
 ## Causa raíz del apagón total (2026-10-31 → 2026-11-05)
 
 Los 7 servidores fallaban con `Request timed out` a los ~36 s. No era la red ni las keys: **era `npx` arrancando en frío**. Medición real:

@@ -3,6 +3,7 @@
   "servers": {
     "chrome-devtools": {"package": "chrome-devtools-mcp@1.6.0", "requires": []},
     "context7": {"package": "@upstash/context7-mcp@3.2.5", "requires": []},
-    "apify": {"package": "@apify/actors-mcp-server@0.13.0", "requires": ["APIFY_TOKEN"]}
+    "apify": {"package": "@apify/actors-mcp-server@0.13.0", "requires": ["APIFY_TOKEN"]},
+    "craft-anything": {"package": "github release o `cargo install --path apps/craft-anything-cli` (Rust 1.97+), v0.6.1", "requires": ["app o CLI instalada", "agente de código con sesión (Claude Code primero)"], "status": "opcional, early alpha, no verificado"}
   }
 }

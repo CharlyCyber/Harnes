@@ -2,6 +2,11 @@
 
 ## Sin publicar
 
+- Craft Anything documentado como alternativa opt-in (rebuild+check, early
+  alpha): puntero en `reverse-engineer-anything/SKILL.md`, inventario opcional
+  en `config/mcp.json` y nota con estado `no verificado` en
+  `knowledge/mcps.md` (sección "Candidatos y opcionales"). No adoptado ni
+  instalado por el canon; REA sigue siendo el motor de evidencia.
 - `web` como entrada única de diseño/desarrollo web: consolida `charli-design`,
   `web-animation`, `3d-web-designer` y `scroll-film-studio` como módulos
   internos bajo demanda (sin mover directorios); test previo web (tipo/estilo,
