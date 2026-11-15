@@ -2,8 +2,17 @@
 
 > Este documento conserva observaciones históricas de una máquina (2026-11-05), no demuestra el estado actual de ninguna instalación. El inventario portable vive en `config/mcp.json` y `config/opencode.example.json` es opt-in; el sync no cambia MCPs. Verifica y rota las claves expuestas manualmente.
 
-Estado de `~\.config\opencode\opencode.json` tras la reparación 2026-11-05.
+Estado de `~\.config\opencode\opencode.json` tras la migración a sintaxis V2 (2026-11-15).
 Cada MCP justifica su existencia con comportamiento observable; los eliminados tienen registro en `decisions.md`.
+
+## Sintaxis vigente (V2)
+
+OpenCode V2 anida los servidores en `mcp.servers.<nombre>`; los nombres directos bajo `mcp` siguen aceptándose pero están deprecados. En V2:
+
+- `enabled: false` se ignora: para dejar un servidor configurado sin conectar se usa `disabled: true`.
+- `${VAR}` no se expande: las credenciales se escriben `"environment": {"APIFY_TOKEN": "{env:APIFY_TOKEN}"}`.
+
+Ejemplo completo y opt-in en `config/opencode.example.json`. Una config con la forma V1 arranca sin error visible pero deja servidores sin conectar y tokens literales: es el fallo que mantuvo `apify` fuera del catálogo hasta el 2026-11-15.
 
 ## Activos
 
@@ -12,12 +21,12 @@ Cada MCP justifica su existencia con comportamiento observable; los eliminados t
 | `chrome-devtools` | DevTools real: consola, red, performance, screenshots, interacción (29 tools en v1.6.0). Herramienta primaria de inspección web del loop anti-slop de `web` (módulo `design/`). | Nada (lanza Chrome local) | 1.3 s | ✅ operativo |
 | `context7` | Documentación fresca y versionada de librerías, directo de la fuente. | Key opcional (free tier funcional, verificado sin key) | 3.7 s | ✅ operativo |
 | `apify` | Actores de scraping a demanda (plataformas con login, paginación pesada, redes). | `APIFY_TOKEN` (env user, cuenta `regal_crane`, plan FREE) | 8.9 s | ✅ operativo |
-| `firecrawl` | Crawling/scraping estructurado de sitios (research, competidores). | `FIRECRAWL_API_KEY` (env user, key presente) | — | ⛔ `enabled: false` — egress bloqueado hacia `*.firecrawl.dev` (ver `failures.md`). Reactivar con `enabled: true` + reiniciar cuando haya VPN o cambie la red. |
 
 ## Candidatos y opcionales (no verificados)
 
 | MCP | Qué entrega | Necesita | Estado |
 |---|---|---|---|
+| `firecrawl` | Crawling/scraping estructurado de sitios (research, competidores). | `FIRECRAWL_API_KEY` (env user, key presente) | ⛔ **retirado del inventario** (2026-11-15): egress bloqueado hacia `*.firecrawl.dev` (ver `failures.md`). `FIRECRAWL_API_KEY` sigue en el entorno; reañadir solo con VPN o red que lo permita y dejarlo `disabled: true` hasta verificar el handshake. |
 | `craft-anything` | Estudio y **reconstrucción** de targets (webs/apps/juegos) con bucle Study→Build→Check; 320 tools CLI+MCP (`craft-anything-cli mcp`); clean-room por defecto; Deep solo con autorización. Alternativa opt-in a REA cuando se quiere rebuild+check, no solo evidencia. | App/CLI instalada (release de GitHub o `cargo install --path apps/craft-anything-cli`, Rust 1.97+); agente de código con sesión (Claude Code primero; Codex/Copilot/Grok sin verificar en instalación real); engines que descarga en runtime | ⚠️ **early alpha**, no instalado ni verificado por este canon (2026-11-15). En `config/mcp.json` como opcional; `craft-anything-cli setup` escribiría la config del agente — solo con autorización explícita. No pasa a "operativo" hasta medir arranque y comportamiento en la máquina del usuario. Puntero de uso: `skills/reverse-engineer-anything/SKILL.md`. |
 
 ## Causa raíz del apagón total (2026-10-31 → 2026-11-05)
@@ -39,7 +48,7 @@ Con los paquetes en caché global, `npx -y paquete@version` arranca en < 9 s y l
 
 ## Config legacy eliminada
 
-`~\.opencode\opencode.json` (ubicación heredada) se fusionaba con la canónica y **resucitaba** `markitdown`, `playwright` y `motion` — los tres que la auditoría del 2026-10-30 había retirado — además de reactivar `firecrawl` (sin `enabled:false`) y guardar tres API keys en texto plano. Quedó reducido a `{"$schema": ...}`. Toda la config MCP vive ahora solo en `~\.config\opencode\opencode.json` con placeholders `${VAR}`.
+`~\.opencode\opencode.json` (ubicación heredada) se fusionaba con la canónica y **resucitaba** `markitdown`, `playwright` y `motion` — los tres que la auditoría del 2026-10-30 había retirado — además de reactivar `firecrawl` y guardar tres API keys en texto plano. Quedó reducido a `{"$schema": ...}`. Toda la config MCP vive ahora solo en `~\.config\opencode\opencode.json` con `{env:VAR}`.
 
 ## Keys del operador
 

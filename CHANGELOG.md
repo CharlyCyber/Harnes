@@ -2,6 +2,12 @@
 
 ## Sin publicar
 
+- Config MCP de OpenCode migrada a sintaxis V2 y documentada: servidores en
+  `mcp.servers`, credenciales con `{env:VAR}` y `disabled` en lugar de
+  `enabled`. `apify` vuelve al catálogo (el formato V1 dejaba el token literal)
+  y `firecrawl` sale del inventario por egress bloqueado.
+  `config/opencode.example.json` refleja la forma válida y `knowledge/mcps.md`
+  explica la diferencia.
 - Craft Anything documentado como alternativa opt-in (rebuild+check, early
   alpha): puntero en `reverse-engineer-anything/SKILL.md`, inventario opcional
   en `config/mcp.json` y nota con estado `no verificado` en
