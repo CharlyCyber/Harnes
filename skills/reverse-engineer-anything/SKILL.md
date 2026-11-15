@@ -219,3 +219,25 @@ Explain findings in plain language and tie them to returned evidence. When the
 user asks to build something, use normal coding tools and separate observed
 behavior from design choices. Close an opened native session with
 `close_binary` when the investigation is complete.
+
+## Craft Anything (alternativa externa opt-in, no upstream)
+
+Si el encargo es **reconstruir y comprobar** un target —no solo evidenciarlo—,
+la herramienta externa `craft-anything` (MIT OR Apache-2.0, **early alpha**,
+~320 tools CLI+MCP; `craft-anything-cli mcp`) es una alternativa posible:
+websites, apps y juegos (Unity/Unreal/Godot) con el bucle Study→Build→Check y
+builder por agente local (Claude Code primero; Codex/Copilot/Grok sin verificar
+en instalación real). **No está instalada ni registrada por este canon** y no
+se instala ni configura sin autorización explícita del usuario.
+
+- Clean room es el modo por defecto (trabaja solo con lo visible del target,
+  rehúsa leer su interior); Deep lee código y ficheros y exige autorización
+  explícita y ámbito de uso privado.
+- Nunca copies ni reutilices logos, textos, marcas o assets ajenos sin permiso;
+  el bucle recrea layout, estilo y comportamiento, no derechos.
+- Es alpha: instalación y comportamiento cambian (`cargo install --path
+  apps/craft-anything-cli`, Rust 1.97+, o release de GitHub). No la des por
+  operativa hasta verificarla en la máquina (ver `knowledge/mcps.md`, sección
+  "Candidatos y opcionales").
+- Para evidencia y análisis sin reconstrucción, REA sigue siendo el camino; no
+  sustituyas ni mezcles flujos sin motivo explícito del usuario.

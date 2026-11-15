@@ -79,6 +79,8 @@ Instaladas vía CLI de skills (`~/.agents/.skill-lock.json`, v3); upstream `heyg
 
 **`security-audit` — qué se fusionó:** se conserva el checklist propio de 19 puntos (P1–P19) y `scripts/audit.py` y `scripts/history_scan.py` (historial de git; el motor externo no lo cubre). Se incorporó el escáner `nfaudit` (stack, dependencias, patrones de inyección, configs, Docker, CI, runtimes), su base de reglas (`rules/`, 40 KB), los avisos locales (`data/`), las tres referencias (`references/`) y su licencia. Auditoría del código antes de adoptarlo: stdlib puro, sin `eval`/`exec`/`pickle`; red solo a `api.osv.dev` (opt-in `--osv`) y una petición GET a un dominio del usuario (opt-in `headers`). No se adoptó ninguna otra skill de los repos evaluados.
 
+`craft-anything` (`storytold/craft-anything` @ `2e7dfa5e`): **documentada, no adoptada ni instalada**. Alternativa opt-in a REA para rebuild+check (webs/apps/juegos, ~320 tools CLI+MCP, MIT OR Apache-2.0, **early alpha**); puntero en `reverse-engineer-anything/SKILL.md`, inventario opcional en `config/mcp.json`, estado `no verificado` en `knowledge/mcps.md`. No se vendoriza; no se modifica ninguna config MCP.
+
 ## Stack base heredado (15; cavecrew retirada)
 
 Sin upstream verificado todavía; provienen del stack anterior y se conservan por uso real. **Antes de modificar una, registrar su fuente.** Las entradas `3d-web-designer`, `scroll-film-studio` y `web-animation` se conservan como módulos internos de `web` (ver "Web unificada"); siguen sin upstream verificado.
