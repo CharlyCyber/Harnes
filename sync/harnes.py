@@ -264,6 +264,53 @@ def sync(repo, home, profile=None, check=False, adopt=False):
     print(f'Listo: perfil {profile}, {len(active)} skills enlazadas al canon. Reinicia el agente.')
 
 
+def git_output(repo, *args):
+    """Run Git quietly and avoid echoing remote URLs or credential-bearing stderr."""
+    result = subprocess.run(['git', *args], cwd=str(repo), capture_output=True, text=True)
+    if result.returncode:
+        raise RuntimeError(f'git {args[0] if args else ""} falló (código {result.returncode}); revisa Git y la autenticación local')
+    return result.stdout.strip()
+
+
+def update_checkout(repo, branch='main'):
+    """Fast-forward a clean checkout on its current branch; never stash or switch branches."""
+    repo = Path(repo).resolve()
+    top = Path(git_output(repo, 'rev-parse', '--show-toplevel')).resolve()
+    if top != repo:
+        raise RuntimeError(f'La ruta no es la raíz del checkout: {repo}')
+    current = git_output(repo, 'branch', '--show-current')
+    if current != branch:
+        raise RuntimeError(f'Checkout en rama {current or "(detached)"}; cambia manualmente a {branch} tras revisar tus cambios')
+    if git_output(repo, 'status', '--porcelain', '--untracked-files=all'):
+        raise RuntimeError('Checkout con cambios locales o archivos sin seguimiento; consérvalos y vuelve a intentar cuando esté limpio')
+    git_output(repo, 'remote', 'get-url', 'origin')
+    git_output(repo, 'fetch', '--quiet', 'origin', f'refs/heads/{branch}:refs/remotes/origin/{branch}')
+    before = git_output(repo, 'rev-parse', 'HEAD')
+    target = git_output(repo, 'rev-parse', f'refs/remotes/origin/{branch}')
+    if before != target:
+        git_output(repo, 'merge', '--ff-only', f'refs/remotes/origin/{branch}')
+    after = git_output(repo, 'rev-parse', 'HEAD')
+    return after != before, after
+
+
+def update(repo, home, branch='main'):
+    """Update the canon checkout, then read-only verify its installed links/config."""
+    try:
+        changed, commit = update_checkout(repo, branch)
+    except (RuntimeError, OSError) as exc:
+        print(f'No se actualizó Harnés: {exc}', file=sys.stderr)
+        return 1
+    print(('Harnés actualizado' if changed else 'Harnés ya estaba al día') + f' ({commit[:12]}).')
+    try:
+        sync(repo, home, check=True)
+    except (RuntimeError, ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
+        print('El checkout está actualizado, pero la instalación tiene drift. Revisa el estado y, si corresponde, ejecuta sync tras autorizarlo:', file=sys.stderr)
+        print(str(exc), file=sys.stderr)
+        return 2
+    print('Enlaces e instrucciones verificados. Reinicia los agentes para que recarguen las skills.')
+    return 0
+
+
 def doctor(repo, home, skip_sync=False):
     errors = []
     skills = [p for p in (repo / 'skills').iterdir() if p.is_dir() and (p / 'SKILL.md').exists() and not (p / '_DORMIDA.md').exists()]
@@ -331,11 +378,14 @@ def main():
             p.add_argument('--adopt', action='store_true', help='respaldar colisiones antes de instalar')
     p = sub.add_parser('doctor')
     p.add_argument('--skip-sync', action='store_true')
+    sub.add_parser('update', help='fast-forward a clean main checkout and verify installed links read-only')
     args = parser.parse_args()
     home = args.home.expanduser().absolute()
     try:
         if args.command == 'doctor':
             doctor(REPO, home, args.skip_sync)
+        elif args.command == 'update':
+            return update(REPO, home)
         else:
             sync(REPO, home, args.profile, args.command == 'verify', getattr(args, 'adopt', False))
         return 0

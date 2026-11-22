@@ -22,9 +22,29 @@ python sync/harnes.py verify
 En Windows usa `py -3` si `python` no está disponible. Revisa el código y pide
 permiso antes de ejecutar el sync: modifica configuración del usuario. No uses
 `curl | bash` ni `irm | iex`. No clona ni ejecuta automáticamente código remoto.
-Para actualizar, revisa tus cambios locales y usa `git pull --ff-only` en el
-checkout, después repite `sync`. El checkout debe permanecer en su lugar: las
-skills apuntan a él; si se mueve, ejecuta `sync` desde la nueva ruta.
+
+## Actualizar una instalación
+
+Después de fusionar cambios a `main`, ejecuta en cada máquina o entorno que
+mantenga su propio checkout:
+
+```sh
+python sync/harnes.py update
+```
+
+El comando solo actúa desde la rama local `main` y con el checkout limpio; hace
+fetch de `origin/main`, fast-forward únicamente y luego verifica enlaces e
+instrucciones en modo lectura. **No cambia de rama, no guarda/restaura cambios y
+no ejecuta `sync` automáticamente.** Si detecta drift tras actualizar, muestra
+qué revisar; ejecuta `python sync/harnes.py sync` solo después de revisar y
+autorizar esos cambios de configuración. Reinicia los agentes para recargar las
+skills. Si varios agentes de una máquina usan los mismos enlaces al checkout,
+actualízalo una vez; los entornos/máquinas separados se actualizan por separado.
+
+El checkout debe permanecer en su lugar: las skills apuntan a él; si se mueve,
+ejecuta `sync` desde la nueva ruta. Las actualizaciones de upstream (por ejemplo,
+HyperFrames) no se importan con este comando: se revisan e integran en Harnés
+mediante cambios versionados y un PR.
 
 En una instalación anterior de este harnés, ejecuta **solo después de revisar**:
 
