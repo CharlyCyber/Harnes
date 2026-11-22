@@ -1,35 +1,23 @@
-# Skill installation and freshness
+# Skill catalog lifecycle in Harnes
 
-Read this reference when installing or updating skills, diagnosing unexpected workflow behavior, or running HyperFrames setup in CI.
+Harnes is the source of truth for the skills and internal modules in this repository. HyperFrames instructions and modules are reviewed and updated here, then distributed only through the Harnes sync process. This workflow deliberately does not let the HyperFrames CLI or an external skills manager install, update, prune, or remove catalog content.
 
-For a plugin installation, follow [plugin execution rules](plugin-installation.md); the plugin manager owns updates and all workflows are bundled. The commands below apply only to standalone skills.
+## Do not manage skills from the video workflow
 
-HyperFrames installs the core set eagerly and workflow skills lazily.
+Never invoke the HyperFrames CLI subcommands for skill listing, setup, checking, updating, or removal from a video task. Never invoke another skills package manager or request an unattended/global install.
 
-- **Core set:** `/hyperframes`, the `hyperframes-*` domain skills, and `/media-use`.
-- **Workflow skills:** installed when routing selects them through `npx hyperframes skills update <workflow-name>`.
+Do not use `-g`, skip prompts, update a plugin, or install a missing workflow. If a referenced module is not available in the Harnes checkout, name the missing module and continue only with supported guidance. The user's plugin manager owns plugin-bundle updates; Harnes owns the repository catalog.
 
-## What `init` does
+## Maintainer update workflow
 
-`npx hyperframes init` checks GitHub and refreshes the core set plus other skills already installed. It does not install workflows that have never been used. A current install is a no-op. Offline or rate-limited checks degrade gracefully and do not fail project scaffolding.
+When an operator explicitly requests a Harnes catalog update:
 
-The `--skip-skills` CLI flag is temporarily ignored. CI and tests may opt out with `HYPERFRAMES_SKIP_SKILLS=1`.
+1. Inspect the declared upstream source, commit or release, license, file-level changes, dependencies, scripts, and local-only content.
+2. Port only changes that match the existing canon and preserve custom routing, safety rules, and unique files. Do not replace a module wholesale just because upstream is newer.
+3. Record source SHA, license, adopted paths, and any exclusions in `skills/REGISTRO.md` and the relevant provenance file.
+4. Run focused tests and `git diff --check`. Run `python sync/harnes.py doctor --skip-sync` only when its declared validator is available; do not install it automatically.
+5. Review the final Git diff. Do not sync user-level skills unless explicitly asked.
 
-## Diagnose and update
+## CLI project versions
 
-```bash
-npx hyperframes skills check
-npx hyperframes skills check --json
-npx hyperframes skills update
-npx hyperframes skills update <workflow-name>
-npx hyperframes skills
-```
-
-- `skills check` exits non-zero when an installed skill is stale or the core set is incomplete. Workflows available on demand but not installed are not failures.
-- Bare `skills update` refreshes the core set and everything already installed, prunes unpublished skills, and does not expand the workflow set.
-- Named `skills update <name...>` also installs those named workflows or domain skills.
-- Bare `skills` installs the full published set explicitly.
-
-If the HyperFrames CLI is unavailable, use `npx skills add heygen-com/hyperframes --skill <workflow-name>` for one workflow or `npx skills add heygen-com/hyperframes --all` for the full published set.
-
-The CLI may print a one-line stale-skill reminder during `render`, `lint`, or `check`. Treat a failed update as a visible tool failure; do not continue from a remembered workflow contract.
+A project's `hyperframes` dependency pin is distinct from Harnes skill freshness. Do not change `package.json`, lockfiles, or fetch a CLI release without the user's approval. If the user asks to update the project's CLI, use the launcher in `plugin-installation.md`, make the smallest requested change, run `check`, and report the previous/new version and validation outcome. A successful check establishes validity, not frame-identical output.

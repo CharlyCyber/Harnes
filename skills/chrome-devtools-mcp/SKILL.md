@@ -24,34 +24,11 @@ El MCP ya está registrado en la config de OpenCode (`~\.config\opencode\opencod
 - Google Chrome (stable o newer)
 - npm
 
-## Herramientas (43 total)
+## Herramientas disponibles
 
-### Automatización de entrada (10)
-`click`, `drag`, `fill`, `fill_form`, `handle_dialog`, `hover`, `press_key`, `type_text`, `upload_file`, `click_at`
+La lista y las categorías del servidor han evolucionado; no asumir un recuento fijo ni fiarse de listas copiadas aquí. Consulta las herramientas que expone la conexión MCP activa. La referencia oficial [Tool Reference](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md) documenta la versión upstream, incluyendo depuración, automatización, rendimiento, red, heap, mocks de red, extensiones, terceros, WebMCP, PWA y WebAuthn.
 
-### Navegación (6)
-`list_pages`, `new_page`, `navigate_page`, `close_page`, `select_page`, `wait_for`
-
-### Debugging (8)
-`evaluate_script`, `take_snapshot`, `take_screenshot`, `list_console_messages`, `get_console_message`, `lighthouse_audit`, `screencast_start`, `screencast_stop`
-
-### Performance (3)
-`performance_start_trace`, `performance_stop_trace`, `performance_analyze_insight`
-
-### Network (2)
-`list_network_requests`, `get_network_request`
-
-### Emulación (2)
-`emulate`, `resize_page`
-
-### Memoria (5)
-`take_heapsnapshot`, `get_heapsnapshot_class_nodes`, `get_heapsnapshot_details`, `get_heapsnapshot_retainers`, `get_heapsnapshot_summary`
-
-### Extensiones (5)
-`install_extension`, `list_extensions`, `reload_extension`, `trigger_extension_action`, `uninstall_extension`
-
-### WebMCP (2)
-`list_webmcp_tools`, `execute_webmcp_tool`
+Algunas categorías son opt-in y no aparecerán si el servidor no se inicia con su flag. La documentación oficial actual indica `--categoryExtensions` para extensiones y `--categoryMemory` para herramientas de memoria; `--categoryExperimentalWebmcp` habilita WebMCP. Comprueba [Configuration](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/configuration.md) para los nombres y valores vigentes antes de cambiar la configuración. `--slim` expone un conjunto reducido de herramientas; no presupongas que mantiene el mismo alcance que el modo completo.
 
 ## Cuándo usarlo
 
@@ -79,24 +56,12 @@ El MCP ya está registrado en la config de OpenCode (`~\.config\opencode\opencod
     "chrome-devtools-mcp@latest",
     "--headless",
     "--isolated",
-    "--no-usage-statistics",
-    "--viewport=1920x1080"
+    "--no-usage-statistics"
   ]
 }
 ```
 
-### Flags útiles
-
-| Flag | Descripción |
-|---|---|
-| `--headless` | Modo sin interfaz gráfica |
-| `--isolated` | Perfil temporal que se limpia al cerrar |
-| `--channel=canary` | Usar Chrome Canary |
-| `--slim` | Solo 3 herramientas básicas (nav, script, screenshot) |
-| `--experimental-vision` | Herramientas por coordenadas `click_at(x,y)` |
-| `--experimental-memory` | Herramientas de memoria |
-| `--experimental-screencast` | Grabación de pantalla (requiere ffmpeg) |
-| `--no-usage-statistics` | Desactivar estadísticas de uso |
+Flags, defaults y categorías cambian entre versiones; no copies opciones de una instalación distinta sin verificar la [Configuration Guide](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/configuration.md). Entre las categorías opcionales actuales: `--categoryExtensions`, `--categoryMemory` y `--categoryExperimentalWebmcp`; `--slim` ofrece un perfil reducido. Conserva solo las capacidades necesarias y revisa expresamente los permisos y efectos antes de habilitarlas. No assumes que una categoría experimental o una herramienta esté activa por defecto.
 
 ## Primer prompt de prueba
 

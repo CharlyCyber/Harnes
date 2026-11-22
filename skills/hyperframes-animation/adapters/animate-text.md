@@ -2,24 +2,17 @@
 
 For deterministic text-animation specs (e.g., `typewriter` at exact `240ms / 46ms stagger / steps(1, end) easing`), this skill defers to the separate **`animate-text`** skill maintained by Pixel Point at [github.com/pixel-point/animate-text](https://github.com/pixel-point/animate-text). It provides a catalog of 24 named text effects with portable contracts and per-library implementation recipes (GSAP, Anime.js, WAAPI).
 
-**We do NOT ship the catalog inside this repo.** Pixel Point's `animate-text` is the source of truth; vendoring its files here would violate the upstream's licensing (no explicit license declared upstream as of this writing). Loading the skill separately keeps the legal picture clean while giving you the same catalog.
+**We do NOT ship the catalog inside this repo.** Pixel Point's `animate-text` is the source of truth; vendoring its files here would violate the upstream's licensing (no explicit license declared upstream as of this writing). The effect catalog has no verified license in this checkout, so it is not vendored or redistributed here. Do not install or fetch it automatically.
 
 ## How to use it
 
-When a beat needs a deterministic text animation, load the upstream skill alongside this one:
-
-```bash
-# In your project root, install the upstream skill into .agents/skills/
-npx skills add pixel-point/animate-text
-```
-
-Or in a skill-aware agent runtime, the skill is invoked by name:
+When a beat needs a deterministic text animation and the user has already made the separately licensed skill available in the active agent, it can be invoked by name:
 
 ```
 /animate-text
 ```
 
-Once installed, the specs live at:
+If the skill is not already available, do not install or fetch it. Use the prose fallback below, or ask the user whether they want a separate license and source review. The upstream project may place specs at:
 
 ```
 .agents/skills/animate-text/assets/effects/<id>.json   # per-library implementation recipe
@@ -45,7 +38,7 @@ For convenience while writing storyboards: the upstream skill provides 24 effect
 - **Per-line (2):** mask-reveal-up, line-by-line-slide
 - **Whole element (7):** micro-scale-fade, shimmer-sweep, fade-through, shared-axis-z, scale-down-fade, focus-blur-resolve, shared-axis-x
 
-For descriptions, durations, easing curves, and the per-library recipes: load `/animate-text` and read its own catalog page.
+For descriptions, durations, easing curves, and the per-library recipes: use `/animate-text` only if it is already available in the active agent; otherwise describe the intent and implement a simple local motion pattern.
 
 ## In the storyboard
 

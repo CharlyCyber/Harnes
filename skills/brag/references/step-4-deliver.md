@@ -9,6 +9,8 @@ npx hyperframes check   # brag's single pre-render gate — fix every error it r
 
 Fix all errors. `check` is brag's single pre-render gate — run it and fix everything it reports, including WCAG contrast failures (they gate as errors, not warnings). Each contrast finding carries a suggested compliant color, so apply it or adjust within the palette family and re-run `check` — most fixes need no screenshot. There is no per-element contrast escape hatch for real text; the only bypass is `check --no-contrast`, which skips the entire WCAG pass (all-or-nothing), not a way to accept one borderline element. For exact contrast thresholds, layout escape hatches, and reporting details, follow the `check` guidance in `skills/hyperframes/SKILL.md` (Quality Checks) and `npx hyperframes --help`. `check`'s layout pass backstops the "keep all text readable" creative law — fix any reported overflow.
 
+Read contrast coverage, not only the pass/fail headline. If the composition has visible DOM text but `check` reports zero checked elements, contrast is unverified. Inspect `check --json` and sampled frames, fix unsupported color formats if they caused omissions, and rerun the check before rendering.
+
 For a visual gut-check before rendering, optionally capture key frames:
 
 ```bash
