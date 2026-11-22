@@ -10,5 +10,8 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 
+# dependencias opcionales de captura/reversa de animación vendorizada
+skills/video/scripts/reanimate/node_modules/
+
 # backups locales de migracion
 *.bak-*
