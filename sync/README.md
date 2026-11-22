@@ -13,7 +13,8 @@ python sync/harnes.py sync --profile all   # catálogo completo
 python sync/harnes.py sync --profile core  # vuelve al mínimo
 python sync/harnes.py sync --adopt         # respalda colisiones y migra enlaces antiguos
 python sync/harnes.py verify               # solo lectura; exit 1 con drift
-python sync/harnes.py update               # fast-forward limpio en main + verify
+python sync/harnes.py update               # fast-forward limpio en main + verify solo lectura
+python sync/harnes.py refresh              # validar + fast-forward + sync seguro + verify
 python sync/harnes.py doctor --skip-sync   # valida canon sin instalación
 ```
 
@@ -21,9 +22,15 @@ python sync/harnes.py doctor --skip-sync   # valida canon sin instalación
 alternativa para los wrappers. `update` actualiza solo un checkout limpio en la
 rama local `main`, mediante `fetch` y `merge --ff-only` de `origin/main`; nunca
 cambia de rama ni hace stash. Después verifica enlaces/instrucciones en modo
-lectura y **no** ejecuta `sync`: si informa drift, revisa y autoriza antes de
-aplicar configuración al HOME. No instala actualizaciones de dependencias o
-módulos upstream. El `doctor` necesita `skills-ref`:
+lectura y no ejecuta `sync`.
+
+`refresh` comprueba que el checkout esté limpio y en `main`, valida el canon,
+actualiza mediante fast-forward, vuelve a validar y aplica `sync` sin `--adopt`;
+por último verifica los enlaces/instrucciones gestionados. No instala software
+ni cambia de rama. Un conflicto detiene la sincronización sin adoptar o
+sobrescribir la ruta conflictiva. Si ocurre después del fast-forward, el checkout
+puede quedar actualizado aunque el HOME siga pendiente de sincronizar. `doctor`,
+que `refresh` usa, necesita `skills-ref`: instálalo una vez con
 `python -m pip install -r sync/requirements.txt`.
 
 ## Modelo y custodia

@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import json
 import os
 import shutil
@@ -7,6 +8,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from unittest.mock import call, patch
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('harnes', ROOT / 'sync/harnes.py')
@@ -155,7 +158,139 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(state.read_text(), '{bad')
 
 
+class RefreshTests(unittest.TestCase):
+    def setUp(self):
+        self.repo = Path('/tmp/harnes-refresh-repo')
+        self.home = Path('/tmp/harnes-refresh-home')
+
+    def _git(self, cwd, *args):
+        result = subprocess.run(['git', *args], cwd=cwd, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.strip()
+
+    def _git_fixture(self, base):
+        remote, seed, checkout, home = (base / name for name in ('origin.git', 'seed', 'checkout', 'home'))
+        self._git(base, 'init', '--bare', str(remote))
+        seed.mkdir()
+        self._git(seed, 'init')
+        self._git(seed, 'checkout', '-b', 'main')
+        self._git(seed, 'config', 'user.name', 'Harnes Test')
+        self._git(seed, 'config', 'user.email', 'harnes-test@example.invalid')
+        (seed / 'skills/alpha').mkdir(parents=True)
+        (seed / 'skills/alpha/SKILL.md').write_text('alpha', encoding='utf-8')
+        (seed / 'sync').mkdir()
+        (seed / 'sync/targets.json').write_text(json.dumps({
+            'universal': {'skills': '~/.agents/skills'},
+            'instructions': [{'source': 'global.md', 'dest': '~/.agents/AGENTS.md', 'always': True},
+                             {'source': 'global.md', 'dest': '~/.claude/CLAUDE.md'}],
+            'clients': [{'id': 'claude', 'path': '~/.claude/skills'}],
+            'profiles': {'core': ['alpha'], 'all': 'all'},
+            'internal_skills': [],
+        }), encoding='utf-8')
+        (seed / 'global.md').write_text('managed rules v1', encoding='utf-8')
+        self._git(seed, 'add', '.')
+        self._git(seed, 'commit', '-m', 'initial')
+        self._git(seed, 'remote', 'add', 'origin', str(remote))
+        self._git(seed, 'push', '-u', 'origin', 'main')
+        subprocess.run(['git', '--git-dir', str(remote), 'symbolic-ref', 'HEAD', 'refs/heads/main'], check=True)
+        self._git(base, 'clone', str(remote), str(checkout))
+        home.mkdir()
+        (home / '.claude').mkdir()
+        (home / '.agents').mkdir()
+        (home / '.agents/AGENTS.md').write_text('my personal rules\n', encoding='utf-8')
+        return remote, seed, checkout, home
+
+    def test_refresh_fast_forwards_and_syncs_while_preserving_personal_rules(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            remote, seed, checkout, home = self._git_fixture(Path(tmp))
+            (seed / 'global.md').write_text('managed rules v2', encoding='utf-8')
+            self._git(seed, 'add', 'global.md')
+            self._git(seed, 'commit', '-m', 'update managed rules')
+            expected = self._git(seed, 'rev-parse', 'HEAD')
+            self._git(seed, 'push', 'origin', 'main')
+            with patch.object(h, 'doctor'):
+                with redirect_stdout(io.StringIO()):
+                    result = h.refresh(checkout, home)
+            self.assertEqual(result, 0)
+            self.assertEqual(self._git(checkout, 'rev-parse', 'HEAD'), expected)
+            self.assertTrue(h.same_link(home / '.agents/skills/alpha', checkout / 'skills/alpha'))
+            managed = (home / '.agents/AGENTS.md').read_text(encoding='utf-8')
+            self.assertIn('my personal rules', managed)
+            self.assertIn('managed rules v2', managed)
+            h.sync(checkout, home, check=True)
+
+    def test_refresh_conflict_leaves_foreign_files_intact_without_adopt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            remote, seed, checkout, home = self._git_fixture(Path(tmp))
+            (seed / 'global.md').write_text('managed rules v2', encoding='utf-8')
+            self._git(seed, 'add', 'global.md')
+            self._git(seed, 'commit', '-m', 'update managed rules')
+            expected = self._git(seed, 'rev-parse', 'HEAD')
+            self._git(seed, 'push', 'origin', 'main')
+            foreign = home / '.agents/skills/alpha'
+            foreign.mkdir(parents=True)
+            (foreign / 'valuable.txt').write_text('keep this', encoding='utf-8')
+            with patch.object(h, 'doctor'):
+                stderr = io.StringIO()
+                with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                    result = h.refresh(checkout, home)
+            self.assertEqual(result, 1)
+            self.assertEqual(self._git(checkout, 'rev-parse', 'HEAD'), expected)
+            self.assertEqual((foreign / 'valuable.txt').read_text(encoding='utf-8'), 'keep this')
+            self.assertFalse((home / '.harnes/state.json').exists())
+            self.assertIn('No se usó --adopt', stderr.getvalue())
+
+    def test_refresh_validates_then_updates_syncs_and_verifies_without_adopt(self):
+        with patch.object(h, 'assert_clean_checkout', return_value=self.repo) as preflight, \
+             patch.object(h, 'doctor') as doctor, \
+             patch.object(h, 'update_checkout', return_value=(True, '0123456789abcdef')) as update, \
+             patch.object(h, 'sync') as sync:
+            with redirect_stdout(io.StringIO()):
+                result = h.refresh(self.repo, self.home)
+        self.assertEqual(result, 0)
+        preflight.assert_called_once_with(self.repo, 'main')
+        doctor.assert_has_calls([call(self.repo, self.home, skip_sync=True),
+                                 call(self.repo, self.home, skip_sync=True)])
+        update.assert_called_once_with(self.repo, 'main')
+        sync.assert_has_calls([call(self.repo, self.home),
+                               call(self.repo, self.home, check=True)])
+
+    def test_refresh_stops_on_managed_path_conflict_without_adopting(self):
+        conflict = RuntimeError('conflicto, conservado: ~/.agents/skills/video')
+        with patch.object(h, 'assert_clean_checkout', return_value=self.repo), \
+             patch.object(h, 'doctor'), \
+             patch.object(h, 'update_checkout', return_value=(True, '0123456789abcdef')), \
+             patch.object(h, 'sync', side_effect=conflict) as sync:
+            stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                result = h.refresh(self.repo, self.home)
+        self.assertEqual(result, 1)
+        sync.assert_called_once_with(self.repo, self.home)
+        self.assertIn('No se usó --adopt', stderr.getvalue())
+        self.assertIn('conservado', stderr.getvalue())
+
+    def test_refresh_does_not_fetch_when_preflight_validation_fails(self):
+        with patch.object(h, 'assert_clean_checkout', return_value=self.repo), \
+             patch.object(h, 'doctor', side_effect=RuntimeError('validador ausente')) as doctor, \
+             patch.object(h, 'update_checkout') as update, \
+             patch.object(h, 'sync') as sync:
+            stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                result = h.refresh(self.repo, self.home)
+        self.assertEqual(result, 1)
+        doctor.assert_called_once_with(self.repo, self.home, skip_sync=True)
+        update.assert_not_called()
+        sync.assert_not_called()
+
+
 class RepositoryCLITests(unittest.TestCase):
+    def test_refresh_command_is_exposed(self):
+        result = subprocess.run([sys.executable, str(ROOT / 'sync/harnes.py'), 'refresh', '--help'],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('clean main checkout', result.stdout)
+        self.assertIn('safely syncs', result.stdout)
+
     def test_actual_catalog_in_disposable_home(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
