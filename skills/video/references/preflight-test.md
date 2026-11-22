@@ -42,7 +42,9 @@ en `brief.md` dentro de la carpeta del proyecto para trazabilidad.
 | f | Motion 3D / WebGL | HyperFrames adapter `three` (nota en `motion.md`) |
 | g | Pieza musical / al beat | Motion o edición + `beat-sync.md` |
 | h | Tarjetas estáticas, loops o montaje libre | `general-video/SKILL.md` |
-| i | Otro (describe) | El router decide |
+| i | Replicar una animación/motion de una web, vídeo, GIF o prototipo | `references/reverse-animation.md`; definir alcance y fidelidad |
+| j | Crear vídeo a partir del estilo visual de una referencia (no réplica literal) | `video-use/references/analyze.md` + ruta motion/edición |
+| k | Otro (describe) | El router decide |
 
 El agente mapea la elección a la ruta del router y avisa si cambia el plan
 (p. ej. d o g suelen depender de autorización/herramientas).
@@ -104,6 +106,14 @@ obligatorias o mensajes que deben quedar? · ¿número aproximado de escenas? ·
 ¿Quieres storyboard rápido antes del build? · ¿probe de 2–3 s antes del render
 completo (ver parte C)? · ¿revisar fotogramas intermedios o solo aprobado
 final? · plazo de entrega.
+
+### A11. Solo si hay una referencia que replicar
+
+¿El resultado debe ser código/animación web o un vídeo exportado? · ¿qué
+sección/interacción/intervalo concreto? · ¿fidelidad al movimiento, mixta o
+pixel-perfect? · ¿la referencia es propia/autorizada o se usará solo como
+inspiración? Deduce las respuestas cuando el pedido o repo ya las aclaren; no
+preguntes por las cuatro si basta una aclaración de alcance.
 
 ## B. Test del entorno (silencioso, sin instalar nada)
 

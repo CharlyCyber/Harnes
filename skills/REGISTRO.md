@@ -34,6 +34,19 @@ canon; three.js MIT v0.187.0 no vendorizado; R3F descartado por alcance).
 Ningún servicio, dependencia ni audio nuevo se instala; nada se registró como
 skill pública. Procedencia y licencias: `video/references/provenance.md`.
 
+## Video unificado — réplica de motion (2026-11-22)
+
+Se amplía la única entrada `video` con `references/reverse-animation.md` y
+herramientas locales vendorizadas desde `NiazMorshed2007/reanimate` @
+`3f7a55a2986a84ca2173e86ee9127eefe31d046d` (MIT): captura DOM/canvas/WebGL,
+extracción de fotogramas, ajuste de easing, comparación por fotograma y hojas
+etiquetadas. Orientado a reconstrucción de animación de referencia con
+especificación y evidencia; no sustituye los flujos existentes de creación,
+edición o promo. El setup es optativo y protegido por confirmación de permiso;
+no se instalaron dependencias al integrar. Ninguna nueva skill pública ni
+cambio de perfiles. Procedencia, límites de revisión y aviso MIT:
+`video/references/provenance.md` y `video/licenses/reanimate-MIT.txt`.
+
 ## Web unificada (2026-11-15)
 
 `web` es la entrada única en `core` y `all` para diseño y desarrollo web.
