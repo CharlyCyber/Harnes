@@ -272,8 +272,8 @@ def git_output(repo, *args):
     return result.stdout.strip()
 
 
-def update_checkout(repo, branch='main'):
-    """Fast-forward a clean checkout on its current branch; never stash or switch branches."""
+def assert_clean_checkout(repo, branch='main'):
+    """Require the repository root on the requested branch with no local changes."""
     repo = Path(repo).resolve()
     top = Path(git_output(repo, 'rev-parse', '--show-toplevel')).resolve()
     if top != repo:
@@ -283,6 +283,12 @@ def update_checkout(repo, branch='main'):
         raise RuntimeError(f'Checkout en rama {current or "(detached)"}; cambia manualmente a {branch} tras revisar tus cambios')
     if git_output(repo, 'status', '--porcelain', '--untracked-files=all'):
         raise RuntimeError('Checkout con cambios locales o archivos sin seguimiento; consérvalos y vuelve a intentar cuando esté limpio')
+    return repo
+
+
+def update_checkout(repo, branch='main'):
+    """Fast-forward a clean checkout on its current branch; never stash or switch branches."""
+    repo = assert_clean_checkout(repo, branch)
     git_output(repo, 'remote', 'get-url', 'origin')
     git_output(repo, 'fetch', '--quiet', 'origin', f'refs/heads/{branch}:refs/remotes/origin/{branch}')
     before = git_output(repo, 'rev-parse', 'HEAD')
@@ -308,6 +314,25 @@ def update(repo, home, branch='main'):
         print(str(exc), file=sys.stderr)
         return 2
     print('Enlaces e instrucciones verificados. Reinicia los agentes para que recarguen las skills.')
+    return 0
+
+
+def refresh(repo, home, branch='main'):
+    """Update a clean main checkout, validate it, then sync without adopting conflicts."""
+    try:
+        repo = assert_clean_checkout(repo, branch)
+        doctor(repo, home, skip_sync=True)
+        changed, commit = update_checkout(repo, branch)
+        doctor(repo, home, skip_sync=True)
+        # Never use adopt here: sync preflights all destinations and refuses foreign conflicts.
+        sync(repo, home)
+        sync(repo, home, check=True)
+    except (RuntimeError, ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
+        print('Refresh detenido. No se usó --adopt; revisa el conflicto antes de cambiar rutas o respaldar contenido.', file=sys.stderr)
+        print(str(exc), file=sys.stderr)
+        return 1
+    print(('Harnés actualizado' if changed else 'Harnés ya estaba al día') + f' ({commit[:12]}).')
+    print('Refresh completado. Reinicia o recarga los agentes de esta máquina para que lean las skills e instrucciones actualizadas.')
     return 0
 
 
@@ -379,6 +404,8 @@ def main():
     p = sub.add_parser('doctor')
     p.add_argument('--skip-sync', action='store_true')
     sub.add_parser('update', help='fast-forward a clean main checkout and verify installed links read-only')
+    sub.add_parser('refresh', help='fast-forward, validate, and safely sync managed links/instructions',
+                   description='Fast-forwards a clean main checkout, validates the catalog, and safely syncs only Harnes-managed links/instructions without --adopt.')
     args = parser.parse_args()
     home = args.home.expanduser().absolute()
     try:
@@ -386,6 +413,8 @@ def main():
             doctor(REPO, home, args.skip_sync)
         elif args.command == 'update':
             return update(REPO, home)
+        elif args.command == 'refresh':
+            return refresh(REPO, home)
         else:
             sync(REPO, home, args.profile, args.command == 'verify', getattr(args, 'adopt', False))
         return 0

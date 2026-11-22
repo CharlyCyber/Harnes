@@ -2,6 +2,11 @@
 
 ## Sin publicar
 
+- Comando `refresh` para agentes: valida el canon, hace fast-forward solo desde
+  `main` con checkout limpio y sincroniza únicamente enlaces/instrucciones
+  gestionados por Harnés. No cambia de rama ni usa `--adopt`; ante conflictos,
+  se detiene y conserva las rutas afectadas. Las instrucciones globales enseñan
+  a los agentes a ejecutar este flujo cuando el usuario pide "actualiza Harnés".
 - Config MCP de OpenCode migrada a sintaxis V2 y documentada: servidores en
   `mcp.servers`, credenciales con `{env:VAR}` y `disabled` en lugar de
   `enabled`. `apify` vuelve al catálogo (el formato V1 dejaba el token literal)

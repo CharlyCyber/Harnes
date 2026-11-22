@@ -8,7 +8,7 @@ portable y seguro para el trabajo existente. Preferencias globales en
 ## Trabajar aquí
 
 - Windows, macOS o Linux: Python 3.9+ y Git.
-- Instalar: `python sync/harnes.py sync`; actualizar el checkout local limpio en `main`: `python sync/harnes.py update` (solo fast-forward, verificación sin escribir al HOME).
+- Instalar: `python sync/harnes.py sync`; refrescar instalación tras cambios fusionados: `python sync/harnes.py refresh` (valida, fast-forward limpio en `main`, sincroniza solo lo gestionado y verifica; se detiene ante conflictos, nunca usa `--adopt`). Para actualizar solo el checkout sin escribir al HOME: `python sync/harnes.py update`.
 - Verificar instalación: `python sync/harnes.py verify`.
 - Validar canon: `python -m pip install -r sync/requirements.txt` y `python sync/harnes.py doctor --skip-sync`.
 - Pruebas aisladas: `python -m unittest discover -s sync/tests -p 'test_*.py'`.

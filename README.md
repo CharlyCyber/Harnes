@@ -23,26 +23,34 @@ En Windows usa `py -3` si `python` no está disponible. Revisa el código y pide
 permiso antes de ejecutar el sync: modifica configuración del usuario. No uses
 `curl | bash` ni `irm | iex`. No clona ni ejecuta automáticamente código remoto.
 
-## Actualizar una instalación
+## Actualizar y sincronizar una instalación
 
-Después de fusionar cambios a `main`, ejecuta en cada máquina o entorno que
-mantenga su propio checkout:
+Después de fusionar cambios a `main`, usa el comando seguro en cada máquina o
+entorno que mantenga su propio checkout:
 
 ```sh
-python sync/harnes.py update
+python sync/harnes.py refresh
 ```
 
-El comando solo actúa desde la rama local `main` y con el checkout limpio; hace
-fetch de `origin/main`, fast-forward únicamente y luego verifica enlaces e
-instrucciones en modo lectura. **No cambia de rama, no guarda/restaura cambios y
-no ejecuta `sync` automáticamente.** Si detecta drift tras actualizar, muestra
-qué revisar; ejecuta `python sync/harnes.py sync` solo después de revisar y
-autorizar esos cambios de configuración. Reinicia los agentes para recargar las
-skills. Si varios agentes de una máquina usan los mismos enlaces al checkout,
-actualízalo una vez; los entornos/máquinas separados se actualizan por separado.
+`refresh` valida el canon, exige checkout limpio en la rama local `main`, hace
+fetch de `origin/main` y fast-forward únicamente; después sincroniza solo los
+enlaces e instrucciones declarados por Harnés y verifica el resultado. No cambia
+de rama, no guarda/restaura cambios, no instala dependencias y nunca usa
+`--adopt`. Si detecta un conflicto, se detiene sin adoptar contenido ajeno y
+muestra qué revisar. El checkout puede haber avanzado si el conflicto se detecta
+después del fast-forward, pero la sincronización no lo resolverá sobrescribiendo
+la ruta. Si falta el validador, instálalo una vez con
+`python -m pip install -r sync/requirements.txt`.
 
-El checkout debe permanecer en su lugar: las skills apuntan a él; si se mueve,
-ejecuta `sync` desde la nueva ruta. Las actualizaciones de upstream (por ejemplo,
+Si solo quieres actualizar el checkout y verificar sin sincronizar la
+configuración del usuario, usa `python sync/harnes.py update`. Para comprobar el
+canon sin modificar el HOME, usa `python sync/harnes.py doctor --skip-sync`.
+
+Al terminar, reinicia o recarga los agentes para que relean las skills. Si varios
+agentes de una máquina comparten los mismos enlaces al checkout, actualízalo una
+vez; máquinas y entornos aislados se actualizan por separado. El checkout debe
+permanecer en su lugar: las skills apuntan a él; si se mueve, vuelve a ejecutar
+`refresh` desde su nueva ruta. Las actualizaciones upstream (por ejemplo,
 HyperFrames) no se importan con este comando: se revisan e integran en Harnés
 mediante cambios versionados y un PR.
 
