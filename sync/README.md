@@ -13,11 +13,17 @@ python sync/harnes.py sync --profile all   # catálogo completo
 python sync/harnes.py sync --profile core  # vuelve al mínimo
 python sync/harnes.py sync --adopt         # respalda colisiones y migra enlaces antiguos
 python sync/harnes.py verify               # solo lectura; exit 1 con drift
+python sync/harnes.py update               # fast-forward limpio en main + verify
 python sync/harnes.py doctor --skip-sync   # valida canon sin instalación
 ```
 
 `--home RUTA` antes del subcomando permite pruebas aisladas. `HARNES_HOME` es
-alternativa para los wrappers. El `doctor` necesita `skills-ref`:
+alternativa para los wrappers. `update` actualiza solo un checkout limpio en la
+rama local `main`, mediante `fetch` y `merge --ff-only` de `origin/main`; nunca
+cambia de rama ni hace stash. Después verifica enlaces/instrucciones en modo
+lectura y **no** ejecuta `sync`: si informa drift, revisa y autoriza antes de
+aplicar configuración al HOME. No instala actualizaciones de dependencias o
+módulos upstream. El `doctor` necesita `skills-ref`:
 `python -m pip install -r sync/requirements.txt`.
 
 ## Modelo y custodia
