@@ -113,10 +113,10 @@ But adapt it. These are the right scene counts for each tone:
 
 ## Duration guidance
 
-Scene durations must sum to 15-25 seconds. Count them.
+If the user specified `--duration`, scene durations must sum to that duration; record it in the plan. Otherwise, scene durations must sum to 15-25 seconds. Count them.
 
-- Under 15 seconds: too thin, add a scene or lengthen holds.
-- Over 25 seconds: cut a scene or tighten timing.
+- Without an explicit `--duration`, under 15 seconds is too thin (add a scene or lengthen holds), and over 25 seconds requires cutting a scene or tightening timing.
+- With an explicit `--duration`, honor the requested length; do not force it into the default 15-25 second window.
 - 18-22 seconds is the sweet spot for most brag videos.
 
 ## Reading time (keep the pace, not at text's expense)

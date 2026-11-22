@@ -8,19 +8,13 @@ description: >
   Route fresh creation through hyperframes before using this skill.
 ---
 
-**Plugin installs:** Before setup or freshness commands, follow [plugin execution rules](../hyperframes/references/plugin-installation.md) when this skill is inside a HyperFrames plugin. Standalone installs keep the update instructions below.
+**Harnes catalog:** These are internal modules maintained in the Harnes repository. Read [the Harnes CLI and catalog policy](../hyperframes/references/plugin-installation.md); do not install, update, or remove skills through an external manager.
 
 # General video
 
 Run `npx hyperframes usage --json` at the start unless the workflow just read it, then check again at milestones such as after drafting and before rendering. Read the available windows and reset times. If usage is unknown, say so without guessing allowance; keep scope and workflow choices with the user.
 
-Before relying on this workflow, run:
-
-```bash
-npx hyperframes skills update general-video
-```
-
-A successful no-op means the skill is current. Surface an update failure instead of continuing from memory.
+Before relying on this workflow, read the version in the active Harnes checkout. The catalog is managed by Harnes; do not run `npx hyperframes skills update` or download a replacement. If the module is missing, report the missing path and continue only with supported local guidance.
 
 ## 1. Apply cross-cutting source adapters
 
@@ -147,7 +141,7 @@ Timed elements use `class="clip"`; the root and relevant ancestors are sized; ea
 
 ### Borrow workflows safely
 
-When the piece resembles a shipped workflow, borrow its genre references as examples. First run `npx hyperframes skills update <workflow-name>`. Borrow its story shape and taste, not its private scripts, pipeline state, or directory contract. The generic build remains owned by this skill.
+When the piece resembles a shipped workflow, read its genre references from the Harnes checkout. Borrow its story shape and taste, not its private scripts, pipeline state, or directory contract. Do not install or refresh another skill manager; the generic build remains owned by this skill.
 
 ## 7. Done
 

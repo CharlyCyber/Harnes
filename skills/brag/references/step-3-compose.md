@@ -14,7 +14,7 @@ Create a short launch-style brag video for [App Name].
 - Composition directory: `<output-dir>/composition/`
 - Rendered video: `<output-dir>/brag.mp4`
 - Format: [landscape / vertical / square] — [width]x[height]
-- Duration: [15-25 seconds]
+- Duration: [requested target; 15-25 seconds unless the user set `--duration`]
 
 ## Source Material
 - Project root: [path]
@@ -75,7 +75,7 @@ Load the consolidated Hyperframes skill — `skills/hyperframes/SKILL.md` (cubre
 Requirements:
 - Show at least one real UI, copy, or visual element from the source project.
 - Keep all text readable in the final render.
-- Keep the video within 15-25 seconds.
+- Keep the video within 15-25 seconds unless the user explicitly set `--duration`; then match that duration.
 - Include the planned music/SFX layer unless audio was explicitly disabled or documented as intentionally silent.
 - Treat `/brag` audio notes as guidance, not a fixed cue sheet. Choose SFX after the visual animation exists.
 - Treat music cue metadata as optional timing hints. Hyperframes decides exact animation timing and should ignore cues that hurt readability, scene pacing, or the product story.

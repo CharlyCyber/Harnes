@@ -1,43 +1,21 @@
-# Running from an installed plugin
+# Running the HyperFrames CLI from Harnes
 
-Check the directory two levels above the loaded `SKILL.md` for `plugin.json`,
-`.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, or
-`.cursor-plugin/plugin.json` identifying `hyperframes`, or a Gemini extension manifest.
-That directory is `<PLUGIN_ROOT>`. If none exists, this is a standalone skill;
-follow the normal installation and freshness instructions.
+Harnes owns this catalog. The HyperFrames modules here are internal references, not a separately managed skill installation. Do not run `npx hyperframes skills update`, `skills check`, bare `skills`, `npx skills add`, or any global install/update command. Do not refresh or remove these modules from the CLI; update the Harnes source and use its documented sync process only when the operator explicitly requests a sync.
 
-For a plugin installation, these rules replace the standalone update commands
-in every workflow and reference:
+## CLI launcher
 
-- Do not run `hyperframes skills update`, `skills check`, or `npx skills add`.
-  The agent's plugin manager owns installation and updates. Read the workflow at
-  `<PLUGIN_ROOT>/skills/<name>/SKILL.md`; report a missing bundled skill instead
-  of downloading a different release. Resolve all skill references inside this
-  bundle, even if a standalone copy is also installed. Claude exposes the router
-  as `/hyperframes:hyperframes`; other clients may expose `/hyperframes`.
-- Replace `npx hyperframes` (or bare `hyperframes`) in command examples with:
+Run commands in the user's project directory through the launcher shipped with the loaded Harnes HyperFrames module. Resolve the module directory from the loaded skill; do not guess a home-directory or plugin path.
 
-  ```bash
-  node "<PLUGIN_ROOT>/skills/hyperframes/scripts/plugin-cli.mjs" <command> <args...>
-  ```
+```bash
+node "<HYPERFRAMES_SKILL_DIR>/scripts/plugin-cli.mjs" <command> <args...>
+```
 
-  Run in the user's project directory, never in the plugin directory. The launcher
-  selects the manifest's CLI version and disables automatic standalone skill
-  installation, including during `init`. The first call may download that exact
-  CLI version through npm. A download failure is an error, not permission to use
-  latest. Existing project dependency files and lockfiles must not be overwritten
-  to match the plugin; surface a runtime incompatibility before changing them.
+For a bundled Node helper, use the same launcher with `--script <absolute-script-path> <args...>`. The launcher starts npm from the user's home folder, not from a received or untrusted project, and moves the CLI into the project only after npm has resolved the CLI. It enforces the minimum CLI security floor, honors a plugin manifest pin when this is genuinely a plugin installation, and sets `HYPERFRAMES_SKIP_SKILLS=1` so the CLI cannot install or refresh third-party skills behind Harnes.
 
-- For bundled Node helpers, use the same
-  launcher with `--script <absolute-script-path> <args...>`. This passes the
-  release version to their dependency loader. External providers, registry
-  downloads, and existing project dependencies have their own versions; a plugin
-  version alone does not freeze those inputs.
-- Treat the plugin directory as read-only. Put outputs and temporary work in the
-  project or a temporary directory. Pass this plugin root and launcher convention
-  to any delegated workflow so it does not fall back to global skills.
+The standalone default selects a compatible published CLI. If a precise release is required, use `--cli-version <exact-version>` before the command; never take a version from an untrusted project's package files. CLI acquisition through `npx` is not a global software install, but it still uses the network. If the requested work would fetch or upgrade software and the user has not already authorized that acquisition, ask first. Do not alter project dependency files or lockfiles without explicit approval.
 
-To get newer skills, use the client's plugin update flow and reload the session.
-Do not silently update an installed plugin during a video task.
+## Plugin bundles
 
-The launcher suppresses CLI update notices as well as standalone skill refreshes, including when running an older CLI with a stale notice cache. It passes the release as `HYPERFRAMES_PLUGIN_VERSION` for plugin-aware helpers and as `HYPERFRAMES_SKILL_PKG_VERSION` for the existing helper-package bootstrap. Our release process versions those packages together.
+If the loaded module is inside a HyperFrames plugin, the agent's plugin manager owns that plugin's version. The launcher reads the bundle manifest and selects its pinned CLI release. Treat the plugin directory as read-only; put outputs and temporary work in the project or a temporary directory. To receive a newer plugin, the user updates it using the host's plugin manager and reloads the session. Never silently update an installed plugin during a task.
+
+Always read references from the Harnes catalog copy selected by the active router, even if another standalone HyperFrames copy is also installed. If a required internal module is missing, report the missing path; do not download a replacement.

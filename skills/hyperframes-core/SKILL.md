@@ -3,7 +3,7 @@ name: hyperframes-core
 description: The HyperFrames composition contract — build one renderable project. Use for composition structure, the `data-*` timing attributes, `class="clip"`, tracks, sub-compositions, variables, framework-owned media playback, deterministic-render rules, and validation. Read before writing composition HTML.
 ---
 
-**Plugin installs:** Before setup or freshness commands, follow [plugin execution rules](../hyperframes/references/plugin-installation.md) when this skill is inside a HyperFrames plugin. Standalone installs keep the update instructions below.
+**Harnes catalog:** These are internal modules maintained in the Harnes repository. Read [the Harnes CLI and catalog policy](../hyperframes/references/plugin-installation.md); do not install, update, or remove skills through an external manager.
 
 # HyperFrames Core
 

@@ -25,8 +25,8 @@ The Skills CLI (`npx skills`) is the package manager for the open agent skills e
 **Key commands:**
 
 - `npx skills find [query] [--owner <owner>]` - Search for skills interactively or by keyword, optionally scoped to a GitHub owner
-- `npx skills add <package>` - Install a skill from GitHub or other sources
-- `npx skills update` - Update all installed skills
+- `npx skills add <package>` - External installer. Do not run from Harnes; adoption is reviewed and managed through the Harnes catalog.
+- `npx skills update` - External updater. Do not run from Harnes; it can update skills owned by other managers.
 
 **Browse skills at:** https://skills.sh/
 
@@ -64,11 +64,12 @@ For example:
 
 ### Step 4: Verify Quality Before Recommending
 
-**Do not recommend a skill based solely on search results.** Always verify:
+**Do not recommend a skill based solely on search results or popularity.** Before proposing adoption, verify:
 
-1. **Install count** — Prefer skills with 1K+ installs. Be cautious with anything under 100.
-2. **Source reputation** — Official sources (`vercel-labs`, `anthropics`, `microsoft`) are more trustworthy than unknown authors.
-3. **GitHub stars** — Check the source repository. A skill from a repo with <100 stars should be treated with skepticism.
+1. **Source and scope** — identify the exact repository, commit/tag, files, upstream instructions, scripts, and dependencies. Treat popularity, stars, and install counts as context only, not trust signals.
+2. **License** — verify the license file and that it covers the exact content and assets being considered.
+3. **Behavior and risk** — inspect scripts, subprocesses, network access, credential handling, destructive writes, and external dependencies. Do not execute or install during review.
+4. **Fit and provenance** — compare with the Harnes canon, preserve local material, and record the exact source, license, and any exclusions before adoption.
 
 ### Step 5: Present Options to the User
 
@@ -82,14 +83,10 @@ When you find relevant skills, present them to the user with:
 Example response:
 
 ```
-I found a skill that might help! The "react-best-practices" skill provides
-React and Next.js performance optimization guidelines from Vercel Engineering.
-(185K installs)
-
-To install it:
-npx skills add vercel-labs/agent-skills@react-best-practices
-
-Learn more: https://skills.sh/vercel-labs/agent-skills/react-best-practices
+I found a skill that may help: "react-best-practices" from Vercel Engineering.
+Here is the source and license information I could verify: [repository link].
+Would you like me to review its files and license for possible adoption into Harnes?
+I will not install it globally or overwrite another manager's copy.
 ```
 
 ### Step 6: Propose adoption, never install globally

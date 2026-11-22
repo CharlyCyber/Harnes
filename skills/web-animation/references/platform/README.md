@@ -4,7 +4,7 @@ Subconjunto offline de **Modern Web Guidance** de Google Chrome — solo las
 guías de motion/scroll/transitions que complementan a Framer Motion y GSAP en
 este módulo. Los textos están **sin modificar** respecto al upstream.
 
-- Fuente: `GoogleChrome/modern-web-guidance` @ `4dd968349e54ca45a05dd5c818fb035c9054b022` (v1.0.0, 2026-11-10), corpus en npm `modern-web-guidance@1.0.0`.
+- Fuente: `GoogleChrome/modern-web-guidance` @ `64a6d708f5a43f2cd3fde5d4d7db3905ba1bdf65` (v1.0.1, 2026-11-22), corpus en npm `modern-web-guidance@1.0.1`. Dos de las 16 guías seleccionadas se actualizaron verbatim desde ese commit.
 - Licencia: **Apache-2.0** (ver `LICENSE-modern-web-guidance.txt`). © The Chromium Authors / Google.
 - Vía canónica completa (fuera de este canon): `npx -y modern-web-guidance@latest search "<query>" --skill-version 2026_11_09-5bcc021b` + `retrieve <id>`; solo con autorización y red; para modernizar patrones legacy, su `legacy-scan` (≈20 % del corpus).
 

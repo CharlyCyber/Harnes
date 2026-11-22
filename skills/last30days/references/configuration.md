@@ -1,54 +1,7 @@
-# Configuración — Last30Days
+# Configuration and installation boundary
 
-## Variables de Entorno
+This Harnes copy contains guidance only. It does not contain the upstream engine, setup wizard, scripts, or storage system, so the old environment-variable examples and shell commands are intentionally not reproduced here.
 
-```bash
-# --- Fuentes ---
-XQUIK_API_KEY=           # X/Twitter search
-XAI_API_KEY=             # X/Twitter alternativo
-SCRAPECREATORS_API_KEY=  # TikTok, Instagram, Threads, Pinterest, YT comments
-PERPLEXITY_API_KEY=      # Perplexity Sonar / Deep Research
-OPENROUTER_API_KEY=      # Fallback Perplexity via OpenRouter
-BRAVE_SEARCH_API_KEY=    # Web search (2K free/mes)
+If the user explicitly asks to acquire the upstream runtime, first review the pinned source, license, prerequisites, network access, credential handling and installation scope. Ask before installing packages, changing project/global configuration, or storing credentials. Do not run `npx skills add -g`, bypass prompts, read secret files, or ask for API keys in chat. Prefer the user's approved secret manager and the current upstream setup documentation.
 
-# --- Almacenamiento ---
-LAST30DAYS_MEMORY_DIR=~/Documents/Last30Days  # Donde se guardan briefs
-
-# --- Exclusión ---
-EXCLUDE_SOURCES=tiktok,instagram,threads      # Deshabilitar fuentes
-INCLUDE_SOURCES=perplexity                     # Habilitar fuentes pagas
-```
-
-## macOS Keychain (opcional)
-
-En macOS, las keys pueden ir en el Keychain del sistema en vez de `.env`:
-
-```bash
-bash skills/last30days/scripts/setup-keychain.sh   # Setup interactivo
-security add-generic-password -a "$USER" -s last30days-XAI_API_KEY -w "xai-..."
-```
-
-## Trend Monitoring
-
-```bash
-# Acumular hallazgos en SQLite
-/last30days "topic" --store
-
-# Watchlist para runs scheduleados
-python3 scripts/watchlist.py
-
-# Briefings diarios/semanales
-python3 scripts/briefing.py
-```
-
-## Instalación en el Proyecto
-
-El skill referencia el repo oficial: `github.com/mvanhorn/last30days-skill`
-
-```bash
-# Claude Code (recomendado)
-/plugin marketplace add mvanhorn/last30days-skill
-
-# Codex, Cursor, Copilot, Gemini CLI (vía Agent Skills)
-npx skills add mvanhorn/last30days-skill -g
-```
+Pinned upstream documentation: [Last30Days v4.5.0](https://github.com/mvanhorn/last30days-skill/tree/e63f8e8732f1b934449b363f211b3654531b8ef2/skills/last30days). The upstream's required runtime and configuration may change; do not use old snippets from this Harnes module as current setup instructions.
