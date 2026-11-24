@@ -1,6 +1,10 @@
 # Registro del Catálogo
 
-Estado: **16 skills públicas**; `core` activa 12, `all`, 16. Los módulos internos se conservan en el canon sin enlazarse como skills públicas: 15 de vídeo y 4 de web (`charli-design`, `web-animation`, `3d-web-designer`, `scroll-film-studio`). Parte de la procedencia y licencias sigue pendiente de verificar.
+Estado: **16 skills públicas**; `core` activa 12, `all`, 16. Los módulos internos se conservan en el canon sin enlazarse como skills públicas: 15 de vídeo y 5 de web (`charli-design`, `web-animation`, `3d-web-designer`, `scroll-film-studio`, `html-demo`). Parte de la procedencia y licencias sigue pendiente de verificar.
+
+## HTML Demo — integración selectiva
+
+`html-demo` es módulo interno de `web`, también consultable por `video` para demos de interfaz. Procede de `MengTo/Skills` @ `05043c3b37d20a6943762fc219a7797c214b8bb0`, MIT; archivos incluidos, licencia y límites en `web/references/provenance.md`. Una demo HTML recreada no es una captura real ni una sesión en vivo. `video/references/website-demo.md` guía el recorrido real de una URL, la captura opcional y la adaptación a vídeo. No se instalan dependencias ni se añade otra skill pública.
 
 ## Adopciones propias
 

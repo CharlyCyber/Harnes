@@ -71,6 +71,7 @@ manual, previa revisión. El respaldo de una junction antigua sigue siendo un
 ## Skills y perfiles
 
 - Por defecto, `core` activa 12 skills, incluidas `video` y `web`, las entradas únicas para vídeo y diseño/desarrollo web; el protocolo A/B de cuatro tareas está en [knowledge/video-evaluation.md](knowledge/video-evaluation.md). `python sync/harnes.py sync --profile all` activa 16 skills públicas; para volver, usa `--profile core`. Los módulos internos de vídeo y web se cargan bajo demanda desde el checkout, no se registran como skills independientes. `web` incorpora guías nativas Baseline vendorizadas de Modern Web Guidance (Apache-2.0) para motion y View Transitions.
+- Para mostrar una web o portafolio desde una URL, `video` dispone de un [flujo de recorrido real y captura](skills/video/references/website-demo.md); `web` incluye [demos HTML simuladas](skills/html-demo/SKILL.md) para integrar en páginas. Son entregables distintos: la simulación no es grabación ni transmisión en vivo. Navegador, captura y render dependen de las herramientas disponibles y permisos del entorno.
 - Los enlaces por skill apuntan directamente al checkout. No hay copia física
   duplicada gestionada por el harnés. Las skills de otros gestores se conservan.
 - `~/.agents/skills` es la ruta interoperable para clientes que la soportan;

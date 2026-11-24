@@ -2,6 +2,7 @@
 
 ## Sin publicar
 
+- `html-demo` integrado selectivamente como módulo interno MIT de `web`: plantillas React/vanilla para demos simuladas y ruta de `video` para recorridos reales de portafolios, distinguiendo simulación, captura, sesión en vivo y exportación. No se instalan dependencias ni se crea una skill pública.
 - Comando `refresh` para agentes: valida el canon, hace fast-forward solo desde
   `main` con checkout limpio y sincroniza únicamente enlaces/instrucciones
   gestionados por Harnés. No cambia de rama ni usa `--adopt`; ante conflictos,
