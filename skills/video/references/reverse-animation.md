@@ -11,6 +11,7 @@ Carga esta guía cuando el objetivo dependa de una referencia concreta: «haz qu
 | Inspirarse en el **estilo** de un vídeo para crear otro vídeo | Nuevo vídeo con identidad propia; no copiar sus planos, recursos ni contenido | Analiza con `video-use/references/analyze.md`, define una ficha de estilo y crea por `motion.md`/edición |
 | Crear desde cero un vídeo con características descritas | Vídeo, storyboard o prompt, según lo solicitado | Router principal `video/SKILL.md`; `preflight-test.md` cuando aporte valor |
 | Hacer un vídeo promocional de un sitio, app o producto | Vídeo promocional, no cambios al sitio | Ruta de promo en `video/SKILL.md`; motion/HyperFrames o edición según materiales |
+| Recorrer y mostrar la web real a partir de una URL | Grabación/vídeo del sitio real, no una simulación | `video/references/website-demo.md`; usa `html-demo` solo para una recreación identificada como tal |
 | Animar o reconstruir el sitio web en sí | Código web, no un vídeo exportado | Usa `web/SKILL.md` como router de la implementación; conserva aquí el análisis de la referencia |
 | Analizar o describir una referencia, sin construir nada | Informe/especificación | `video-use` o `analizar-videos`; no inicialices el pipeline de reconstrucción |
 

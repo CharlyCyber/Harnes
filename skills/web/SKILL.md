@@ -3,8 +3,8 @@ name: web
 description: >
   Universal entry point for designing, building, styling, animating and verifying
   web pages, sites and web apps: landing pages, marketing sites, storefronts,
-  product UIs, dashboards, design systems, web animation, 3D/WebGL scenes and
-  scroll-driven cinematic sites. Route by deliverable and existing project, then
+  product UIs, dashboards, design systems, interactive product or portfolio demos,
+  web animation, 3D/WebGL scenes and scroll-driven cinematic sites. Route by deliverable and existing project, then
   load only needed internal workflows. Use for any web design or frontend build
   request, including explicit /web.
 ---
@@ -24,6 +24,7 @@ Conserva el stack, la identidad y las convenciones del proyecto: **no migres fra
 | Caso | Acción y módulos bajo demanda (rutas relativas a `CANON`) |
 |---|---|
 | Dirección de arte, identidad visual, paletas, tipografía, layout, rediseño o auditoría anti-slop | Lee `charli-design/SKILL.md` (+ `references/` bajo demanda: taste-core, layout, type, polish, critique, motion…). Es la fuente del canon de marca CHARLI (`charli-design/references/brand.md`). |
+| Demo de producto o portafolio integrada en una web: UI simulada, ventana animada o tour interactivo | Lee `html-demo/SKILL.md`; la simulación no es la página real ni una grabación. Si piden grabar la web real o exportar vídeo, consulta `video/references/website-demo.md`; si piden una sesión en directo, comprueba que el cliente pueda compartirla. |
 | Animación web: Framer Motion, GSAP, scroll-driven, View Transitions, parallax, stagger, micro-interacciones | Lee `web-animation/SKILL.md`; para plataforma nativa (Baseline) consulta `web-animation/references/platform/` (guías vendorizadas, Apache-2.0). Regla: nativa primero si el proyecto no pide librería y el soporte lo permite. |
 | Web 3D / WebGL / Three.js / React Three Fiber / Spline | Lee `3d-web-designer/SKILL.md`. React Three Fiber solo en proyectos React; en DOM vanilla, three vanilla. |
 | Sitio cinematográfico con una toma continua por scroll (scroll-film) | Lee `scroll-film-studio/SKILL.md`. Ignora su lista interna de "siblings" retirados del canon; este router está al mando. |

@@ -4,7 +4,8 @@ description: >
   Universal entry point for creating, editing, analyzing, animating, reverse-engineering,
   and rendering video, including motion graphics, explainers, ads, launch films, cinematic
   reels, social clips, footage edits, titles, subtitles, sound, reference-style recreation,
-  web animation capture and HyperFrames projects. Route by objective and deliverable,
+  real-browser website or portfolio walkthroughs, web animation capture and HyperFrames projects.
+  Route by objective and deliverable,
   then load only needed internal workflows. Use for any video request, including explicit /video.
 ---
 
@@ -27,6 +28,7 @@ Conserva el proyecto existente y haz cambios mínimos en encargos puntuales. Rec
 | Replicar una animación, interacción o motion concreto de URL/GIF/vídeo/prototipo | Lee `video/references/reverse-animation.md`; para una web usa captura DOM y conserva el stack del destino; para un archivo de vídeo/GIF analiza el intervalo pertinente. Especifica fidelidad y verifica con capturas/comparaciones. |
 | Crear un vídeo inspirado en el estilo de una referencia | Separa estilo de copia literal: analiza la referencia con `video-use/references/analyze.md`, extrae rasgos visuales/motion y aplica a contenido nuevo; lee `video/references/motion.md` o `editing.md` según el medio. |
 | Motion graphics, títulos, explainer, promo, animación o composición HTML | Lee `video/references/motion.md`, luego `hyperframes/SKILL.md`, `hyperframes-core/SKILL.md` y, según necesidad, `hyperframes-animation/SKILL.md`, `hyperframes-creative/SKILL.md`, `hyperframes-keyframes/SKILL.md` y `general-video/SKILL.md`. |
+| Demo o recorrido de una web/portafolio a partir de una URL; captura de la web real | Lee `video/references/website-demo.md`. Si piden mostrar la web real en vídeo, prioriza capturar el navegador real; una demo HTML recreada no es la web en directo. Para demo HTML integrada en una página, consulta `web/SKILL.md` y `html-demo/SKILL.md`. Si piden sesión en directo comprueba que el cliente pueda compartirla. |
 | Promo de app, web o producto (entregable: vídeo) | Usa la ruta de motion/edición según el material; `brag/SKILL.md` es inspiración opcional, no licencia para añadir música ni publicar. No reutilices su audio sin verificar derechos. Si piden animar el sitio/código en vez de exportar un vídeo, consulta `web/SKILL.md`. |
 | Corto estilizado con dirección de arte fuerte o "un film en el estilo X" | `references/lemo-opuscar.md`: puntero externo (librería de estilos, docs CC BY-NC); solo con autorización explícita; el predeterminado sigue siendo HyperFrames. |
 | Pieza con música rítmica / cortes al beat | `references/beat-sync.md`: rejilla validada (librosa o `npx hyperframes beats`) antes del storyboard; cortes y slams anclados a beats; verificación post-render. |
